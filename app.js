@@ -5,6 +5,14 @@ const app = express();
 
 const port = 8080;
 
+// MySQL 데이터베이스 연결 설정
+const dbConfig = {
+  host: 'localhost',
+  user: 'lee',
+  password: 'kdt',
+  database: 'community',
+}
+
 app.use(express.static("public"));
 
 app.get("/", (req, res) => {
