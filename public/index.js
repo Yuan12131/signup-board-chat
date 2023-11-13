@@ -11,9 +11,9 @@ signupForm.addEventListener("submit", async (event) => {
     try {
         const response = await fetch("/signup", {
             method: "POST",
-            body: JSON.stringify(Object.fromEntries(formData)),
+            body: JSON.stringify(Object.fromEntries(formData)), // FormData를 객체로 변환
             headers: {
-                "Content-Type": "application/json",
+            "Content-Type": "application/json",
             },
         });
 
