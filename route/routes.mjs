@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
 router.post('/signup', async (req, res) => {
   // POST 요청에서 속성 : name, password, email을 추출을 위한 비구조화 할당
   const { name, password, email } = req.body;
-  const timestamp = new Date().toLocaleTimeString();
+  const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
 
   try {
     // signUp.json 파일을 비동기적으로 가져오기
