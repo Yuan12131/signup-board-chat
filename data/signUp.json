@@ -1,1 +1,15 @@
-{}
+{
+  "inputRecords": [
+    {
+      "name": "ㅌㅊㅋ",
+      "password": "ㅌㅋ",
+      "email": "ㅌㅋ"
+    },
+    {
+      "name": "ㄴㅇㅍ",
+      "password": "ㄴㅍ",
+      "email": "ㄴㅍ",
+      "timestamp": "11/13/2023, 7:12:45 PM"
+    }
+  ]
+}
