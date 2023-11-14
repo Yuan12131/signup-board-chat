@@ -39,7 +39,6 @@ try {
   // 연결 풀에서 연결을 가져와 createTableQuery 쿼리를 실행 -> 프로미스 반환
   // await 키워드를 사용하여 프로미스가 완료될 때까지 대기 -> result에는 쿼리 실행 결과
   const [result] = await pool.query(createTableQuery);
-  console.log("Users table created successfully:", result);
 } catch (err) {
   console.error("Error creating users table:", err);
 }
@@ -98,7 +97,6 @@ async function insertRecord(record) {
 
     // 쿼리 실행 및 결과 출력
     const [result] = await pool.query(insertQuery, values);
-    console.log("Data inserted successfully:", result);
     return result;
   } catch (err) {
     console.error("Error inserting data into users table:", err);
