@@ -2,8 +2,10 @@ import express from 'express';
 // 파일 시스템 관련 작업을 Promise 기반으로 처리할 수 있는 모듈 -> async/await와 함께 보다 간결한 비동기 코드 작성 가능
 import fs from 'fs/promises';
 import path from 'path'
+import { readJsonFile, insertRecords } from "../database/signup-database.mjs";
 
 const router = express.Router();
+const jsonFilePath = new URL('../data/signUp.json', import.meta.url).pathname;
 
 // GET 요청 처리
 router.get('/', async (req, res) => {
@@ -23,13 +25,13 @@ router.get('/', async (req, res) => {
 
 // '/signup' 경로에 대한 POST 요청 처리
 router.post('/signup', async (req, res) => {
-  // POST 요청에서 속성 : name, password, email을 추출을 위한 비구조화 할당
-  const { name, password, email } = req.body;
-   // timestamp를 MySQL datetime 형식('YYYY-MM-DD HH:mm:ss')으로 변환
-  const timestamp = new Date().toISOString().replace(/T/, ' ').replace(/\.\d+Z$/, '');
-
-
+  
+  
   try {
+    // POST 요청에서 속성 : name, password, email을 추출을 위한 비구조화 할당
+    const { name, password, email } = req.body;
+     // timestamp를 MySQL datetime 형식('YYYY-MM-DD HH:mm:ss')으로 변환
+    const timestamp = new Date().toISOString().replace(/T/, ' ').replace(/\.\d+Z$/, '');
     // signUp.json 파일을 비동기적으로 가져오기
     const data = await fs.readFile('./data/signUp.json', 'utf-8');
     // JSON 데이터로 파싱
@@ -48,6 +50,11 @@ router.post('/signup', async (req, res) => {
 
     // 업데이트된 JSON 데이터를 파일에 쓰기
     await fs.writeFile('./data/signUp.json', JSON.stringify(formData, null, 2));
+
+    const jsonData = await readJsonFile(jsonFilePath);
+    const inputRecords = jsonData.inputRecords || [];
+
+    await insertRecords(inputRecords);
 
     // 성공적인 응답을 클라이언트에 전송
     res.json({
