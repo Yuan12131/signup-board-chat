@@ -24,6 +24,24 @@ async function insertRecord(record) {
   try {
     const { name, password, email, timestamp } = record;
 
+    // 중복 체크 쿼리
+    const duplicateCheckQuery = `
+      SELECT * FROM ${tableName} WHERE name = ? AND email = ? AND timestamp = ?;
+    `;
+
+    // 중복 체크에 사용할 값
+    const duplicateCheckValues = [name, email, timestamp];
+    // 중복 체크 쿼리 실행
+    const [existingRecords] = await pool.query(
+      duplicateCheckQuery,
+      duplicateCheckValues
+    );
+
+    if (existingRecords.length > 0) {
+      // 이미 존재하는 레코드가 있으면 중복으로 처리
+      return { status: "skipped", message: "Record already exists" };
+    }
+
     // 삽입 쿼리
     const insertQuery = `
       INSERT INTO ${tableName} (name, password, email, timestamp)
