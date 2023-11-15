@@ -1,13 +1,10 @@
 import fs from "fs/promises";
 import express from "express";
 import routes from "./route/routes.mjs";
-import {initializeDatabase, readJsonFile, insertRecord, insertRecords} from "./database/signup-database.mjs"
+import {readJsonFile, insertRecords} from "./database/signup-database.mjs"
 
 const app = express();
 const port = 8080;
-
-// 데이터베이스 초기화
-await initializeDatabase();
 
 // signUp.json 파일에서 데이터 읽어오기
 const jsonFilePath = "./data/signUp.json";
@@ -20,12 +17,8 @@ async function startServer() {
 
     // 각 레코드를 비동기적으로 삽입
     await insertRecords(inputRecords);
-
-    // 데이터베이스에 레코드 삽입 후 연결 종료
-    await pool.end();
   } catch (error) {
     console.error("Error reading JSON file or inserting records:", error);
-    await pool.end();
   }
 }
 
