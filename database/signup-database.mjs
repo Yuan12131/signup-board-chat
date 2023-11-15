@@ -24,11 +24,8 @@ const tableName = "users";
 // 레코드 삽입 함수
 async function insertRecord(record) {
   try {
-    const { name, password, email } = record;
-
-    // 현재 날짜 및 시간을 ISO 형식으로 변환 ("YYYY-MM-DD HH:mm:ss" 형식)
-    const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
-
+    const { name, password, email, timestamp } = record;
+  
     // 삽입 쿼리
     const insertQuery = `
       INSERT INTO ${tableName} (name, password, email, timestamp)
