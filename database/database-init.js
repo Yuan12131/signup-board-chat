@@ -1,9 +1,9 @@
-import fs from "fs/promises";
 import mysql from "mysql2/promise";
 import { dbConfig } from './config.mjs';
 
 const pool = mysql.createPool(dbConfig);
 
+// 테이블 쿼리
 const createTableQuery = `
   CREATE TABLE IF NOT EXISTS users (    
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -14,6 +14,7 @@ const createTableQuery = `
   );
 `;
 
+// 데이터베이스 초기화 함수
 async function initializeDatabase() {
   try {
     const [result] = await pool.query(createTableQuery);
