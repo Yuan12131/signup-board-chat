@@ -72,11 +72,11 @@ router.post("/signup", async (req, res) => {
 // board.html GET 요청 처리
 router.get("/board.html", async (req, res) => {
   try {
-    const indexPath = path.resolve(__dirname, "./public/board.html");
-    const indexData = await fs.readFile(indexPath, "utf-8");
-    res.send(indexData);
+    const boardPath = path.resolve(__dirname, "./public/board.html");
+    const boardData = await fs.readFile(board, "utf-8");
+    res.send(boardData);
   } catch (error) {
-    console.error("Error reading index.html:", error);
+    console.error("Error reading board.html:", error);
     res.status(500).send("Internal Server Error");
   }
 });
@@ -84,11 +84,11 @@ router.get("/board.html", async (req, res) => {
 // chat.html GET 요청 처리
 router.get("/chat.html", async (req, res) => {
   try {
-    const indexPath = path.resolve(__dirname, "./public/chat.html");
-    const indexData = await fs.readFile(indexPath, "utf-8");
-    res.send(indexData);
+    const chatPath = path.resolve(__dirname, "./public/chat.html");
+    const chatData = await fs.readFile(chatPath, "utf-8");
+    res.send(chatData);
   } catch (error) {
-    console.error("Error reading index.html:", error);
+    console.error("Error reading chat.html:", error);
     res.status(500).send("Internal Server Error");
   }
 });
