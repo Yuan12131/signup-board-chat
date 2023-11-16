@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="board.css">
+</head>
+
+<body>
+  <div id="root">
+    <h1><a href="/index.html">LOGO</a></h1>
+    <h2>LIST</h2>
+    <table>
+      <tr>
+        <td>TITLE</td>
+        <td>NAME</td>
+        <td>DATE</td>
+      </tr>
+      {% for item in content %}
+      <tr>
+        <td>{{item.subject}}</td>
+        <td>{{item.username}}</td>
+        <td>{{item.date}}</td>
+      </tr>
+      {% endfor %}
+
+
+      <!-- 글쓰기 버튼 -->
+      <button id="openWriteModal">글쓰기</button>
+
+      <!-- 모달 창 -->
+      <div id="writeModal">
+        <h2>⌨️</h2>
+        <form>
+          <label for="title">TITLE</label>
+          <input type="text" id="title" name="title" required>
+          <br>
+          <label for="content">DESCRITION:</label>
+          <textarea id="content" name="content" rows="4" required></textarea>
+          <br>
+          <button type="submit">SUBMIT</button>
+        </form>
+        <button id="closeWriteModal">CLOSE</button>
+      </div>
+
+      <div id="overlay" class="overlay"></div>
+    </table>
+  </div>
+  <script src="board.js" type="module"></script>
+</body>
+
+</html>
