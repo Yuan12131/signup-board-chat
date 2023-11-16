@@ -29,10 +29,7 @@ router.post("/signup", async (req, res) => {
     // POST 요청에서 속성 : name, password, email을 추출을 위한 비구조화 할당
     const { name, password, email } = req.body;
     // timestamp를 MySQL datetime 형식('YYYY-MM-DD HH:mm:ss')으로 변환
-    const timestamp = new Date()
-      .toISOString()
-      .replace(/T/, " ")
-      .replace(/\.\d+Z$/, "");
+    const timestamp = new Date().toISOString().replace(/T/, " ").replace(/\.\d+Z$/, "");
     // signUp.json 파일을 비동기적으로 가져오기
     const data = await fs.readFile("./data/signUp.json", "utf-8");
     // JSON 데이터로 파싱
@@ -57,7 +54,7 @@ router.post("/signup", async (req, res) => {
 
     await insertRecords(inputRecords);
 
-    // 성공적인 응답을 클라이언트에 전송
+    // 성공 응답 클라이언트에 전송
     res.json({
       status: "success",
       formData: {
@@ -68,6 +65,30 @@ router.post("/signup", async (req, res) => {
     });
   } catch (error) {
     console.error("Error handling signup:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// board.html GET 요청 처리
+router.get("/board.html", async (req, res) => {
+  try {
+    const indexPath = path.resolve(__dirname, "./public/board.html");
+    const indexData = await fs.readFile(indexPath, "utf-8");
+    res.send(indexData);
+  } catch (error) {
+    console.error("Error reading index.html:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// chat.html GET 요청 처리
+router.get("/chat.html", async (req, res) => {
+  try {
+    const indexPath = path.resolve(__dirname, "./public/chat.html");
+    const indexData = await fs.readFile(indexPath, "utf-8");
+    res.send(indexData);
+  } catch (error) {
+    console.error("Error reading index.html:", error);
     res.status(500).send("Internal Server Error");
   }
 });
