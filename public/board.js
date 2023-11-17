@@ -4,6 +4,10 @@ const closeReadModal = document.getElementById("closeReadModal");
 const writeModal = document.getElementById("writeModal");
 const readModal = document.getElementById("readModal");
 const overlay = document.getElementById("overlay");
+// 각각의 글 제목 클릭 시 해당 글의 내용을 모달에 출력
+const itemRows = document.querySelectorAll(".item-row"); 
+
+const boardForm = document.getElementById("boardForm");
 
 openWriteModal.addEventListener("click", () => {
   writeModal.style.display = "block";
@@ -15,8 +19,6 @@ closeWriteModal.addEventListener("click", () => {
   overlay.style.display = "none";
 });
 
-// 각각의 글 제목 클릭 시 해당 글의 내용을 모달에 출력
-const itemRows = document.querySelectorAll(".item-row");
 itemRows.forEach((row) => {
   row.addEventListener("click", () => {
     readModal.style.display = "block";
@@ -29,4 +31,21 @@ itemRows.forEach((row) => {
 closeReadModal.addEventListener("click", () => {
   readModal.style.display = "none";
   overlay.style.display = "none";
+});
+
+boardForm.addEventListener("submit", async (event) => {
+  event.preventDefault(); // 폼의 기본 동작을 막음
+    const formData = new FormData(boardForm);
+
+    try {
+        const response = await fetch("/board", {
+        method: "POST",
+        body: JSON.stringify(Object.fromEntries(formData)), // FormData를 객체로 변환
+        headers: {
+            "Content-Type": "application/json",
+        },
+        });
+    } catch (error) {
+        console.error("에러:", error);
+    }
 });
