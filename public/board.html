@@ -27,24 +27,30 @@
       {% endfor %}
     </table>
 
-      <button id="openWriteModal">글쓰기</button>
+    <div id="readModal">
+      <div id="title"></div>
+      <div id="description"></div>
+      <button id="closeReadModal">CLOSE</button>
+    </div>
 
-      <!-- 모달 창 -->
-      <div id="writeModal">
-        <h2>⌨️</h2>
-        <form>
-          <label for="title">제목</label>
-          <input type="text" id="title" name="title" required>
-          <br>
-          <label for="content">내용</label>
-          <textarea id="content" name="content" rows="4" required></textarea>
-          <br>
-          <button type="submit">SUBMIT</button>
-        </form>
-        <button id="closeWriteModal">CLOSE</button>
-      </div>
+    <button id="openWriteModal">글쓰기</button>
 
-      <div id="overlay" class="overlay"></div>
+    <!-- 모달 창 -->
+    <div id="writeModal">
+      <h2>⌨️</h2>
+      <form>
+        <label for="title">제목</label>
+        <input type="text" id="title" name="title" required>
+        <br>
+        <label for="content">내용</label>
+        <textarea id="content" name="content" rows="4" required></textarea>
+        <br>
+        <button type="submit">SUBMIT</button>
+      </form>
+      <button id="closeWriteModal">CLOSE</button>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
   </div>
   <script src="board.js" type="module"></script>
 </body>
