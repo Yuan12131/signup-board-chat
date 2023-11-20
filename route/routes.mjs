@@ -26,8 +26,8 @@ router.get("/", async (req, res) => {
 // '/signup' 경로에 대한 POST 요청 처리
 router.post("/signup", async (req, res) => {
   try {
-    // POST 요청에서 속성 : name, password, email을 추출을 위한 비구조화 할당
-    const { name, password, email } = req.body;
+    // POST 요청에서 속성 : id, password, email을 추출을 위한 비구조화 할당
+    const { signupId, signupPassword, email } = req.body;
     // timestamp를 MySQL datetime 형식('YYYY-MM-DD HH:mm:ss')으로 변환
     const timestamp = new Date().toISOString().replace(/T/, " ").replace(/\.\d+Z$/, "");
     // signUp.json 파일을 비동기적으로 가져오기
@@ -37,8 +37,8 @@ router.post("/signup", async (req, res) => {
 
     // 새로운 레코드 객체를 생성
     const newRecord = {
-      name: name,
-      password: password,
+      signupId: signupId,
+      signupPassword: signupPassword,
       email: email,
       timestamp: timestamp,
     };
@@ -58,8 +58,8 @@ router.post("/signup", async (req, res) => {
     res.json({
       status: "success",
       formData: {
-        name: name,
-        password: password,
+        signupId: signupId,
+        signupPassword: signupPassword,
         email: email,
       },
     });
@@ -124,7 +124,7 @@ router.post("/board", async (req, res) => {
 
     // 새로운 레코드 객체를 생성
     const newRecord = {
-      name: name,
+      id: signupId,
       title: title,
       content: content,
       timestamp: timestamp,
@@ -145,7 +145,7 @@ router.post("/board", async (req, res) => {
     res.json({
       status: "success",
       formData: {
-        name: name,
+        id: id,
         title: title,
         content: content,
         timestamp: timestamp,
