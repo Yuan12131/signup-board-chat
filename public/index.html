@@ -9,21 +9,51 @@
 <body>
   <div id="root">
     <div>
-      <h3>회원가입 후 서비스를 이용하세요</h3>
+      <h3>로그인 후 서비스를 이용하세요</h3>
     </div>
 
-    <form method="post" action="/signup" id="signupForm">
-      <input type="text" name="name" id="name">
-      <input type="text" name="password" id="password">
-      <input type="text" name="email" id="email">
-      <button type="submit"></button>
+    <!-- 로그인 폼 -->
+    <form id="loginForm">
+      <label for="userId"></label>
+      <input type="text" id="userId" name="userId" placeholder="ID를 입력하세요">
+      <label for="password"></label>
+      <input type="password" id="userPassword" name="userPassword" placeholder="PASSWORD를 입력하세요">
+      <button id="loginBtn" type="button" onclick="login()">LOGIN</button>
     </form>
+    
+    <!-- 로그아웃 버튼 -->
+    <button style="display: none;" id="logoutBtn" onclick="logout()">로그아웃</button>
+    
+    <!-- ID 출력 창 -->
+    <div id="loggedInUserId" style="display: none;"></div>
+    
+    <button id="signupBtn">SIGN UP</button>
+    <!-- 회원가입 모달 창 -->
+    <div id="signUpModal">
+      <form method="post" action="/signUp" id="signUpForm">
+        <label for="id">ID : </label>
+        <input type="text" id="id" name="id" required>
+        <br>
+        <label for="password">PASSWORD : </label>
+        <input id="password" name="password" required></input>
+        <br>
+        <label for="name">NAME : </label>
+        <input id="name" name="name" required></input>
+        <br>
+        <button type="submit">SUBMIT</button>
+      </form>
+      <button id="closeSignUpModal">CLOSE</button>
+    </div>
 
-    <div>
+    <div id="indexOverlay"></div>
+
+    <!-- 부모 div에 클래스 추가하여 스타일 적용 -->
+    <div class="container">
       <div class="board">BOARD</div>
       <div class="chat">CHAT</div>
     </div>
   </div>
+
   <script src="index.js" type="module"></script>
 </body>
 </html>
