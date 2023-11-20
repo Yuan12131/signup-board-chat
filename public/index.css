@@ -27,7 +27,6 @@ form {
   background-color: bisque;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 input {
@@ -60,6 +59,7 @@ button {
 #signupBtn{
   position: relative;
   bottom: 150px;
+  right: 160px;
 }
 
 #indexOverlay {
@@ -73,7 +73,7 @@ button {
   z-index: 0;
 }
 
-#signUpModal {
+#signupModal {
   display: none;
   position: fixed;
   top: 50%;
