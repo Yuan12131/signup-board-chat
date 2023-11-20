@@ -1,17 +1,16 @@
 import express from "express";
-// 파일 시스템 관련 작업을 Promise 기반으로 처리할 수 있는 모듈 -> async/await와 함께 보다 간결한 비동기 코드 작성 가능
-import fs from "fs/promises";
+import fs from "fs/promises"; // Promise 기반의 fs 모듈
 import path from "path";
 import { readJsonFile, insertRecords } from "../database/signup-database.mjs";
+import { pool } from "../database/signup-database.mjs";
 
 const router = express.Router();
 const jsonFilePath = new URL("../data/signUp.json", import.meta.url).pathname;
 
-// GET 요청 처리
+// Serve index.html
 router.get("/", async (req, res) => {
   try {
     // index.html 파일의 절대 경로
-    // 현재 모듈을 기준으로 상대 경로를 해석하여 절대 경로로 변환
     const indexPath = path.resolve(__dirname, "./public/index.html");
     // fs/promises 모듈을 사용하여 파일을 읽어오는 비동기 코드
     const indexData = await fs.readFile(indexPath, "utf-8");
@@ -23,7 +22,37 @@ router.get("/", async (req, res) => {
   }
 });
 
-// '/signup' 경로에 대한 POST 요청 처리
+// login 요청
+router.post('/login', async (req, res) => {
+  try {
+    const { signupId, signupPassword } = req.body;
+
+    // 로그인 로직 수행
+    const selectQuery = 'SELECT * FROM users WHERE signupId = ? AND signupPassword = ?';
+    const [results] = await pool.query(selectQuery, [signupId, signupPassword]);
+
+    if (results.length > 0) {
+      // 로그인 성공
+      req.session.user = { id: signupId }; // 세션에 사용자 정보 저장
+      console.log('User logged in:', req.session.user);
+      res.status(200).send('Login successful');
+    } else {
+      // 로그인 실패
+      res.status(401).send('Invalid login credentials');
+    }
+  } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// logout 요청
+router.get('/logout', (req, res) => {
+  req.session.destroy(); // 세션 파기
+  res.redirect('/'); // 로그아웃 후 리다이렉트할 경로 설정
+});
+
+// sign up Form
 router.post("/signup", async (req, res) => {
   try {
     // POST 요청에서 속성 : id, password, email을 추출을 위한 비구조화 할당
@@ -69,11 +98,11 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// board.html GET 요청 처리
+// Serve board.html
 router.get("/board.html", async (req, res) => {
   try {
     const boardPath = path.resolve(__dirname, "./public/board.html");
-    const boardData = await fs.readFile(board, "utf-8");
+    const boardData = await fs.readFile(boardPath, "utf-8");
     res.send(boardData);
   } catch (error) {
     console.error("Error reading board.html:", error);
@@ -81,7 +110,7 @@ router.get("/board.html", async (req, res) => {
   }
 });
 
-// chat.html GET 요청 처리
+// Serve chat.html
 router.get("/chat.html", async (req, res) => {
   try {
     const chatPath = path.resolve(__dirname, "./public/chat.html");
@@ -89,23 +118,6 @@ router.get("/chat.html", async (req, res) => {
     res.send(chatData);
   } catch (error) {
     console.error("Error reading chat.html:", error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-
-// GET 요청 처리
-router.get("/", async (req, res) => {
-  try {
-    // index.html 파일의 절대 경로
-    // 현재 모듈을 기준으로 상대 경로를 해석하여 절대 경로로 변환
-    const indexPath = path.resolve(__dirname, "./public/index.html");
-    // fs/promises 모듈을 사용하여 파일을 읽어오는 비동기 코드
-    const indexData = await fs.readFile(indexPath, "utf-8");
-    // 클라이언트에 읽은 파일 데이터를 응답
-    res.send(indexData);
-  } catch (error) {
-    console.error("Error reading index.html:", error);
     res.status(500).send("Internal Server Error");
   }
 });
