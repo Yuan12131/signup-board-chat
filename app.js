@@ -1,16 +1,24 @@
-import fs from "fs/promises";
 import express from "express";
 import routes from "./route/routes.mjs";
+import session from 'express-session';
 
 const app = express();
 const port = 8080;
-// signUp.json 파일에서 데이터 읽어오기
 
+// 세션 설정
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: true,
+}));
+
+// 정적 파일 미들웨어 등록
 app.use(express.static("public"));
+
+// JSON 파싱 미들웨어 등록
 app.use(express.json());
 
-
-
+// 라우트 등록
 app.use("/", routes);
 
 app.listen(port, () => {
