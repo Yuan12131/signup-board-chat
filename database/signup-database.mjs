@@ -1,25 +1,31 @@
 import fs from "fs/promises";
-import mysql from "mysql2/promise"; // Promise 기반 MySQL2 모듈 사용
+import mysql from "mysql2/promise";
 import { dbConfig } from "./config.mjs";
 
-// MySQL Promise 기반 연결
-// createPool : MySQL 데이터베이스에 연결하기 위한 연결 풀을 생성
-// 연결 풀은 애플리케이션에서 데이터베이스에 연결할 때 이미 생성된 연결을 풀에서 가져와 사용함으로써 성능 향상
+// MySQL 연결 풀 생성
 const pool = mysql.createPool(dbConfig);
 const tableName = "users";
 
-// JSON 파일 읽기 함수
+/**
+ * JSON 파일을 비동기적으로 읽어오는 함수
+ * @param {string} filePath - JSON 파일의 경로
+ * @returns {Promise<object>} - 파싱된 JSON 데이터
+ */
 async function readJsonFile(filePath) {
   try {
     const data = await fs.readFile(filePath, "utf-8");
     return JSON.parse(data);
   } catch (error) {
-    console.error(`Error reading JSON file (${filePath}):`, error);
+    console.error(`JSON 파일 읽기 오류 (${filePath}):`, error);
     throw error;
   }
 }
 
-// 레코드 삽입 함수
+/**
+ * 사용자 레코드를 users 테이블에 삽입하는 함수
+ * @param {object} record - 사용자 레코드 객체
+ * @returns {Promise<object>} - 삽입 결과
+ */
 async function insertRecord(record) {
   try {
     const { signupId, signupPassword, email, timestamp } = record;
@@ -29,17 +35,15 @@ async function insertRecord(record) {
       SELECT * FROM ${tableName} WHERE signupId = ? AND email = ? AND timestamp = ?;
     `;
 
-    // 중복 체크에 사용할 값
     const duplicateCheckValues = [signupId, email, timestamp];
-    // 중복 체크 쿼리 실행
     const [existingRecords] = await pool.query(
       duplicateCheckQuery,
       duplicateCheckValues
     );
 
     if (existingRecords.length > 0) {
-      // 이미 존재하는 레코드가 있으면 중복으로 처리
-      return { status: "skipped", message: "Record already exists" };
+      // 이미 존재하는 레코드가 있으면 중복 처리
+      return { status: "skipped", message: "레코드가 이미 존재합니다" };
     }
 
     // 삽입 쿼리
@@ -48,26 +52,28 @@ async function insertRecord(record) {
       VALUES (?, ?, ?, ?);
     `;
 
-    // 삽입에 사용할 값들
     const values = [signupId, signupPassword, email, timestamp];
-    // 쿼리 실행 및 결과 출력
     const [result] = await pool.query(insertQuery, values);
     return result;
   } catch (err) {
-    console.error("Error inserting data into users table:", err);
+    console.error("users 테이블에 데이터를 삽입하는 중 오류 발생:", err);
     throw err;
   }
 }
 
-// 여러 레코드 삽입 함수 - 여러 사용자의 데이터를 한 번에 데이터베이스에 추가하거나 여러 데이터를 초기화할 때 사용
+/**
+ * 여러 레코드를 users 테이블에 삽입하는 함수
+ * @param {Array<object>} records - 사용자 레코드 객체들의 배열
+ * @returns {Promise<void>} - 모든 레코드가 삽입되면 해결되는 Promise
+ */
 async function insertRecords(records) {
   for (const record of records) {
     try {
       await insertRecord(record);
     } catch (error) {
-      console.error("Error inserting records:", error);
+      console.error("레코드 삽입 중 오류 발생:", error);
     }
   }
 }
 
-export { readJsonFile, insertRecords };
+export { readJsonFile, insertRecords, pool };
