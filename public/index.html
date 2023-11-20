@@ -16,38 +16,37 @@
     <form id="loginForm">
       <label for="userId"></label>
       <input type="text" id="userId" name="userId" placeholder="ID를 입력하세요">
-      <label for="password"></label>
+      <label for="userPassword"></label>
       <input type="password" id="userPassword" name="userPassword" placeholder="PASSWORD를 입력하세요">
-      <button id="loginBtn" type="button" onclick="login()">LOGIN</button>
+      <button id="loginBtn" type="button">LOGIN</button>
     </form>
     
     <!-- 로그아웃 버튼 -->
-    <button style="display: none;" id="logoutBtn" onclick="logout()">로그아웃</button>
+    <button style="display: none;" id="logoutBtn">로그아웃</button>
     
     <!-- ID 출력 창 -->
     <div id="loggedInUserId" style="display: none;"></div>
     
     <button id="signupBtn">SIGN UP</button>
     <!-- 회원가입 모달 창 -->
-    <div id="signUpModal">
-      <form method="post" action="/signUp" id="signUpForm">
-        <label for="id">ID : </label>
-        <input type="text" id="id" name="id" required>
+    <div id="signupModal">
+      <form method="post" action="/signUp" id="signupForm">
+        <label for="signupId">ID : </label>
+        <input type="text" id="signupId" name="signupId" required>
         <br>
-        <label for="password">PASSWORD : </label>
-        <input id="password" name="password" required></input>
+        <label for="signupPassword">PASSWORD : </label>
+        <input type="password" id="signupPassword" name="signupPassword" required>
         <br>
-        <label for="name">NAME : </label>
-        <input id="name" name="name" required></input>
+        <label for="email">EMAIL : </label>
+        <input id="email" name="email" required></input>
         <br>
         <button type="submit">SUBMIT</button>
       </form>
-      <button id="closeSignUpModal">CLOSE</button>
+      <button id="closeSignupModal">CLOSE</button>
     </div>
 
     <div id="indexOverlay"></div>
 
-    <!-- 부모 div에 클래스 추가하여 스타일 적용 -->
     <div class="container">
       <div class="board">BOARD</div>
       <div class="chat">CHAT</div>
