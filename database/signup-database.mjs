@@ -22,15 +22,15 @@ async function readJsonFile(filePath) {
 // 레코드 삽입 함수
 async function insertRecord(record) {
   try {
-    const { name, password, email, timestamp } = record;
+    const { signupId, signupPassword, email, timestamp } = record;
 
     // 중복 체크 쿼리
     const duplicateCheckQuery = `
-      SELECT * FROM ${tableName} WHERE name = ? AND email = ? AND timestamp = ?;
+      SELECT * FROM ${tableName} WHERE signupId = ? AND email = ? AND timestamp = ?;
     `;
 
     // 중복 체크에 사용할 값
-    const duplicateCheckValues = [name, email, timestamp];
+    const duplicateCheckValues = [signupId, email, timestamp];
     // 중복 체크 쿼리 실행
     const [existingRecords] = await pool.query(
       duplicateCheckQuery,
@@ -44,12 +44,12 @@ async function insertRecord(record) {
 
     // 삽입 쿼리
     const insertQuery = `
-      INSERT INTO ${tableName} (name, password, email, timestamp)
+      INSERT INTO ${tableName} (signupId, signupPassword, email, timestamp)
       VALUES (?, ?, ?, ?);
     `;
 
     // 삽입에 사용할 값들
-    const values = [name, password, email, timestamp];
+    const values = [signupId, signupPassword, email, timestamp];
     // 쿼리 실행 및 결과 출력
     const [result] = await pool.query(insertQuery, values);
     return result;
