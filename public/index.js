@@ -11,7 +11,7 @@ const loggedInUserId = document.getElementById("loggedInUserId");
 const h3 = document.querySelector("h3");
 const boardLink = document.querySelector(".board");
 const chatLink = document.querySelector(".chat");
-
+const idCheckBtn = document.getElementById("idCheckBtn");
 
 // 로그인 함수
 loginBtn.addEventListener("click", async function () {
@@ -78,7 +78,6 @@ logoutBtn.addEventListener("click", async function () {
   }
 });
 
-
 // 회원가입 모달창 이벤트 리스너
 signupBtn.addEventListener("click", () => {
   signupModal.style.display = "block";
@@ -92,14 +91,60 @@ closeSignupModal.addEventListener("click", () => {
   indexOverlay.style.display = "none";
 });
 
+// idCheckBtn 클릭 이벤트 처리
+idCheckBtn.addEventListener("click", async function () {
+  const signupId = document.getElementById("signupId").value; // 사용자가 입력한 ID
+
+  try {
+    // 서버로 중복 확인 요청
+    const response = await fetch("/check-id-duplicate", {
+      method: "POST",
+      body: JSON.stringify({ signupId }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const { isIdDuplicate } = await response.json();
+
+      if (isIdDuplicate) {
+        // 중복된 아이디가 있을 경우 메시지 표시
+        alert("아이디가 이미 사용 중입니다. 다른 아이디를 입력해주세요.");
+      } else {
+        // 중복이 없을 경우 메시지 표시 및 회원가입 폼 제출 허용
+        alert("사용 가능한 아이디입니다. 회원가입을 진행하세요.");
+        // 회원가입 폼 제출을 허용하도록 설정
+        signupForm.isIdDuplicate = false;
+      }
+    } else {
+      // 서버에서 중복 확인에 대한 응답이 실패한 경우
+      console.error("HTTP 오류:", response.status);
+      h3.textContent = "오류가 발생했습니다.";
+    }
+  } catch (error) {
+    // 오류 발생 시
+    console.error("에러:", error);
+    h3.textContent = "오류가 발생했습니다. 서버에 연결할 수 없습니다.";
+  }
+});
+
 // 회원가입 폼 데이터 처리 로직
 function addSubmitEventListener() {
   if (signupForm) {
     signupForm.addEventListener("submit", async (event) => {
       event.preventDefault();
+
+      // 중복 확인을 통과하지 않은 경우
+      if (signupForm.isIdDuplicate !== false) {
+        alert("아이디 중복 확인을 먼저 진행해주세요.");
+        return; // 폼 제출을 중단
+      }
+
       const formData = new FormData(signupForm);
 
       try {
+        // 회원가입 진행
         const response = await fetch("/signup", {
           method: "POST",
           body: JSON.stringify(Object.fromEntries(formData)),
