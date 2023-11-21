@@ -1,48 +1,6 @@
 {
   "inputRecords": [
     {
-      "signupId": " ㅊㅁ",
-      "signupPassword": "ㅊㅁ",
-      "email": "ㅊㅁ",
-      "timestamp": "2023-11-20 08:53:09"
-    },
-    {
-      "signupId": " ㅊㅁ",
-      "signupPassword": "ff",
-      "email": "ㅊㅁ",
-      "timestamp": "2023-11-20 08:54:13"
-    },
-    {
-      "signupId": " ds",
-      "signupPassword": "sd",
-      "email": "sd",
-      "timestamp": "2023-11-20 08:54:39"
-    },
-    {
-      "signupId": "vs",
-      "signupPassword": "vs",
-      "email": "sv",
-      "timestamp": "2023-11-20 08:56:15"
-    },
-    {
-      "signupId": "vsd",
-      "signupPassword": "vds",
-      "email": "vsd",
-      "timestamp": "2023-11-20 08:57:00"
-    },
-    {
-      "signupId": "vsddv",
-      "signupPassword": "sdvsdv",
-      "email": "vds",
-      "timestamp": "2023-11-20 08:58:03"
-    },
-    {
-      "signupId": "vsd",
-      "signupPassword": "dsv",
-      "email": "sdv",
-      "timestamp": "2023-11-20 09:04:09"
-    },
-    {
       "signupId": "vv",
       "signupPassword": "vv",
       "email": "vv",
@@ -119,6 +77,36 @@
       "signupPassword": "ll",
       "email": "ll",
       "timestamp": "2023-11-20 10:02:24"
+    },
+    {
+      "signupId": "bang",
+      "signupPassword": "a",
+      "email": "a",
+      "timestamp": "2023-11-20 10:10:30"
+    },
+    {
+      "signupId": "sh",
+      "signupPassword": "sh123",
+      "email": "sh@naver.com",
+      "timestamp": "2023-11-21 02:23:32"
+    },
+    {
+      "signupId": "csm",
+      "signupPassword": "1234",
+      "email": "csm@naver.com",
+      "timestamp": "2023-11-21 06:10:28"
+    },
+    {
+      "signupId": "ㅁjg",
+      "signupPassword": "a",
+      "email": "a",
+      "timestamp": "2023-11-21 08:11:00"
+    },
+    {
+      "signupId": "vv",
+      "signupPassword": "vv",
+      "email": "vv",
+      "timestamp": "2023-11-21 10:54:20"
     }
   ]
 }
