@@ -82,8 +82,8 @@ button {
 
 #signupBtn{
   position: relative;
-  bottom: 177px;
-  left: 80px;
+  bottom: 16vh;
+  left: 10vw;
 }
 
 #indexOverlay {
