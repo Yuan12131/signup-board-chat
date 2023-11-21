@@ -28,8 +28,8 @@
     </table>
 
     <div id="readModal">
-      <div id="title"></div>
-      <div id="description"></div>
+      <div id="readTitle"></div>
+      <div id="readContent"></div>
       <button id="closeReadModal">CLOSE</button>
     </div>
 
@@ -39,11 +39,11 @@
     <div id="writeModal">
       <h2>⌨️</h2>
       <form method="post" action="/board" id="boardForm">
-        <label for="title">제목</label>
-        <input type="text" id="title" name="title" required>
+        <label for="title"></label>
+        <input type="text" id="title" name="title" placeholder="제목을 입력하세요" required>
         <br>
-        <label for="content">내용</label>
-        <textarea id="content" name="content" rows="4" required></textarea>
+        <label for="content"></label>
+        <textarea id="content" name="content" rows="4" placeholder="내용을 입력하세요" required></textarea>
         <br>
         <button type="submit">SUBMIT</button>
       </form>
