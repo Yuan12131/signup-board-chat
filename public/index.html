@@ -31,14 +31,17 @@
     <!-- 회원가입 모달 창 -->
     <div id="signupModal">
       <form method="post" action="/signUp" id="signupForm">
-        <label for="signupId">ID : </label>
-        <input type="text" id="signupId" name="signupId" required>
+        <h2>SIGN UP</h2>
         <br>
-        <label for="signupPassword">PASSWORD : </label>
-        <input type="password" id="signupPassword" name="signupPassword" required>
+        <label for="signupId"></label>
+        <input type="text" id="signupId" name="signupId" placeholder="ID를 입력하세요" required>
+        <button id="idCheckBtn" type="button">중복확인</button>
         <br>
-        <label for="email">EMAIL : </label>
-        <input id="email" name="email" required></input>
+        <label for="signupPassword"></label>
+        <input type="password" id="signupPassword" name="signupPassword" placeholder="PASSWORD 입력하세요" required>
+        <br>
+        <label for="email"></label>
+        <input id="email" name="email" placeholder="EMAIL을 입력하세요" required></input>
         <br>
         <button type="submit">SUBMIT</button>
       </form>
