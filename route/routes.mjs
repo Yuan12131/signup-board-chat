@@ -1,9 +1,10 @@
 import express from "express";
 import fs from "fs/promises"; // Promise 기반의 fs 모듈
 import path from "path";
-import { readJsonFile, insertRecords, pool } from "../database/signup-database.mjs";
+import { readJsonFile, insertRecords } from "../database/signup-database.mjs";
 import { insertBoardRecords } from "../database/board-database.mjs";
 import session from "express-session";
+import { pool } from "../database/config.mjs";
 
 const router = express.Router();
 const signupJsonFile = new URL("../data/signUp.json", import.meta.url).pathname;
@@ -214,6 +215,29 @@ router.post("/board", async (req, res) => {
     console.error("Error handling board:", error);
     res.status(500).send("Internal Server Error");
   }
+});
+
+// GET /get-posts 엔드포인트에 대한 처리
+router.get('/get-posts', async (req, res) => {
+  try {
+    // 시간 순으로 정렬된 글 목록 조회 쿼리
+    const query = 'SELECT * FROM board ORDER BY timestamp DESC';
+
+    // 쿼리 실행
+    const [results] = await pool.query(query);
+
+    // 정상적으로 글 목록을 조회한 경우 클라이언트로 보내기
+    res.json(results);
+  } catch (err) {
+    console.error('글 목록 조회 오류:', err);
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+// 프로그램 종료 시 MySQL 연결 종료
+process.on('SIGINT', async () => {
+  await pool.end();
+  process.exit();
 });
 
 export default router;
