@@ -1,9 +1,7 @@
 import fs from "fs/promises";
 import mysql from "mysql2/promise";
-import { dbConfig } from "./config.mjs";
+import { dbConfig, pool } from "./config.mjs";
 
-// MySQL 연결 풀 생성
-const pool = mysql.createPool(dbConfig);
 const tableName = "users";
 
 /**
