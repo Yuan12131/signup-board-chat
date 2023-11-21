@@ -12,21 +12,25 @@
   <div id="root">
     <h1><a href="/index.html">LOGO</a></h1>
     <h2>LIST</h2>
-    <table>
-      <tr>
-        <td>TITLE</td>
-        <td>NAME</td>
-        <td>DATE</td>
-      </tr>
-      {% for item in content %}
-      <tr class="item-row" data-content="{{item.content}}">
-        <td class="title-cell">{{item.subject}}</td>
-        <td>{{item.username}}</td>
-        <td>{{item.date}}</td>
-      </tr>
-      {% endfor %}
+
+    <table id="postTable">
+      <thead>
+        <tr>
+          <th>TITLE</th>
+          <th>NAME</th>
+          <th>DATE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="item-row" data-content="{{item.content}}">
+          <td class="title-cell">{{item.subject}}</td>
+          <td>{{item.username}}</td>
+          <td>{{item.date}}</td>
+        </tr>
+      </tbody>
     </table>
 
+    <!-- 글읽기 모달 창 -->
     <div id="readModal">
       <div id="readTitle"></div>
       <div id="readContent"></div>
@@ -35,7 +39,7 @@
 
     <button id="openWriteModal">글쓰기</button>
 
-    <!-- 모달 창 -->
+    <!-- 글쓰기 모달 창 -->
     <div id="writeModal">
       <h2>⌨️</h2>
       <form method="post" action="/board" id="boardForm">
