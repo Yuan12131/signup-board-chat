@@ -1,7 +1,4 @@
-import mysql from "mysql2/promise";
-import { dbConfig } from "./config.mjs";
-
-const pool = mysql.createPool(dbConfig);
+import { pool } from "./config.mjs";
 
 // 테이블 쿼리
 const createUsersTableQuery = `
