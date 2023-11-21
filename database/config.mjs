@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import mysql2 from "mysql2/promise"
 
 dotenv.config();
 
@@ -9,4 +10,6 @@ const dbConfig = {
   database: "community",
 };
 
-export { dbConfig };
+const pool = mysql2.createPool(dbConfig);
+
+export { dbConfig, pool };
