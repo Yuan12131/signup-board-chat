@@ -52,7 +52,9 @@ boardForm.addEventListener("submit", async function (event) {
 
     if (response.ok) {
       // 글쓰기 성공 시
-      loadPosts()
+      writeModal.style.display = "none";
+      overlay.style.display = "none";
+      // loadPosts()
     } else {
       // 글쓰기 실패 시
       console.error("HTTP 오류:", response.status);
@@ -66,13 +68,40 @@ boardForm.addEventListener("submit", async function (event) {
 });
 
 
-// 글 목록 로드
-async function loadPosts() {
-  const response = await fetch("/get-posts");
-  if (response.ok) {
-    const posts = await response.json();
-    displayPosts(posts);
-  } else {
-    console.error("글 목록 로드 실패:", response.statusText);
-  }
-}
+// // 글 목록 로드
+// async function loadPosts() {
+//   const response = await fetch("/get-posts");
+//   if (response.ok) {
+//     const posts = await response.json();
+//     displayPosts(posts);
+//   } else {
+//     console.error("글 목록 로드 실패:", response.statusText);
+//   }
+// }
+
+// // 글 목록 표시
+// function displayPosts(posts) {
+//   const tableBody = document.querySelector("#postTable tbody");
+//   tableBody.innerHTML = "";
+
+//   posts.forEach((post) => {
+//     const row = tableBody.insertRow();
+//     row.innerHTML = `<td class="title-cell">${post.title}</td><td>${post.name}</td><td>${post.date}</td>`;
+//     row.addEventListener("click", () => displayPostContent(post));
+//   });
+// }
+
+// // 글 내용 표시
+// function displayPostContent(post) {
+//   readTitle.textContent = post.title;
+//   readContent.textContent = post.content;
+//   readModal.style.display = "block";
+// }
+
+// // 모달 닫기
+// closeReadModal.addEventListener("click", () => {
+//   readModal.style.display = "none";
+// });
+
+// // 초기 로드
+// loadPosts();
