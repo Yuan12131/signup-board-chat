@@ -1,11 +1,32 @@
 import express from "express";
 import fs from "fs/promises"; // Promise 기반의 fs 모듈
 import path from "path";
-import { readJsonFile, insertRecords } from "../database/signup-database.mjs";
-import { pool } from "../database/signup-database.mjs";
+import { readJsonFile, insertRecords, pool } from "../database/signup-database.mjs";
+import session from 'express-session';
 
 const router = express.Router();
 const jsonFilePath = new URL("../data/signUp.json", import.meta.url).pathname;
+
+// 세션 설정
+router.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+}));
+
+router.use(express.json());
+router.use(express.urlencoded({ extended: true }));
+
+// 로그인 세션 확인
+router.get('/check-session', (req, res) => {
+  if (req.session && req.session.user) {
+    // 세션이 있는 경우, 세션은 유효하다고 응답합니다.
+    res.status(200).send('세션 유효');
+  } else {
+    // 세션이 없는 경우, 세션이 유효하지 않다고 응답합니다.
+    res.status(401).send('세션 유효하지 않음');
+  }
+});
 
 // Serve index.html
 router.get("/", async (req, res) => {
@@ -26,14 +47,20 @@ router.get("/", async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { signupId, signupPassword } = req.body;
-
+    
     // 로그인 로직 수행
+    // SQL 쿼리를 정의 - users 테이블에서 주어진 signupId와 signupPassword와 일치하는 레코드를 찾음
     const selectQuery = 'SELECT * FROM users WHERE signupId = ? AND signupPassword = ?';
+    // await pool.query(selectQuery, [signupId, signupPassword])를 사용하여 데이터베이스에서 쿼리를 실행
+    // pool.query는 MySQL 풀에서 연결을 가져와 쿼리를 실행하며, [signupId, signupPassword]는 SQL 쿼리에 전달할 매개변수
+    // 쿼리 결과를 분해하여 첫 번째 요소를 results에 할당 - results는 SQL 쿼리에 의해 반환된 결과
     const [results] = await pool.query(selectQuery, [signupId, signupPassword]);
-
+    
+    // 쿼리 결과가 하나 이상의 레코드를 반환했는지 확인 -> 사용자가 올바른 아이디와 비밀번호로 로그인한 경우
     if (results.length > 0) {
       // 로그인 성공
-      req.session.user = { id: signupId }; // 세션에 사용자 정보 저장
+      // 로그인이 성공한 경우, req.session.user에 사용자 정보를 저장 -> 세션에 사용자 정보를 기록
+      req.session.user = { id: signupId };
       console.log('User logged in:', req.session.user);
       res.status(200).send('Login successful');
     } else {
@@ -48,8 +75,16 @@ router.post('/login', async (req, res) => {
 
 // logout 요청
 router.get('/logout', (req, res) => {
-  req.session.destroy(); // 세션 파기
-  res.redirect('/'); // 로그아웃 후 리다이렉트할 경로 설정
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+      res.status(500).send('Internal Server Error');
+    } else {
+      // 클라이언트에게 응답을 보내기 전에 세션 쿠키를 클리어
+      res.clearCookie('connect.sid');
+      res.status(200).send('Logout successful');
+    }
+  });
 });
 
 // sign up Form
@@ -63,7 +98,7 @@ router.post("/signup", async (req, res) => {
     const data = await fs.readFile("./data/signUp.json", "utf-8");
     // JSON 데이터로 파싱
     const formData = JSON.parse(data);
-
+    
     // 새로운 레코드 객체를 생성
     const newRecord = {
       signupId: signupId,
@@ -71,18 +106,18 @@ router.post("/signup", async (req, res) => {
       email: email,
       timestamp: timestamp,
     };
-
+    
     // 기존 데이터 배열에 새 레코드를 추가
     formData.inputRecords.push(newRecord);
-
+    
     // 업데이트된 JSON 데이터를 파일에 쓰기
     await fs.writeFile("./data/signUp.json", JSON.stringify(formData, null, 2));
-
+    
     const jsonData = await readJsonFile(jsonFilePath);
     const inputRecords = jsonData.inputRecords || [];
-
+    
     await insertRecords(inputRecords);
-
+    
     // 성공 응답 클라이언트에 전송
     res.json({
       status: "success",
@@ -98,30 +133,6 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// Serve board.html
-router.get("/board.html", async (req, res) => {
-  try {
-    const boardPath = path.resolve(__dirname, "./public/board.html");
-    const boardData = await fs.readFile(boardPath, "utf-8");
-    res.send(boardData);
-  } catch (error) {
-    console.error("Error reading board.html:", error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-// Serve chat.html
-router.get("/chat.html", async (req, res) => {
-  try {
-    const chatPath = path.resolve(__dirname, "./public/chat.html");
-    const chatData = await fs.readFile(chatPath, "utf-8");
-    res.send(chatData);
-  } catch (error) {
-    console.error("Error reading chat.html:", error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
 // '/board' 경로에 대한 POST 요청 처리
 router.post("/board", async (req, res) => {
   try {
@@ -133,7 +144,7 @@ router.post("/board", async (req, res) => {
     const data = await fs.readFile("./data/board.json", "utf-8");
     // JSON 데이터로 파싱
     const formData = JSON.parse(data);
-
+    
     // 새로운 레코드 객체를 생성
     const newRecord = {
       id: signupId,
@@ -141,18 +152,18 @@ router.post("/board", async (req, res) => {
       content: content,
       timestamp: timestamp,
     };
-
+    
     // 기존 데이터 배열에 새 레코드를 추가
     formData.inputRecords.push(newRecord);
-
+    
     // 업데이트된 JSON 데이터를 파일에 쓰기
     await fs.writeFile("./data/board.json", JSON.stringify(formData, null, 2));
-
+    
     const jsonData = await readJsonFile(jsonFilePath);
     const inputRecords = jsonData.inputRecords || [];
-
+    
     await insertRecords(inputRecords);
-
+    
     // 성공 응답 클라이언트에 전송
     res.json({
       status: "success",
