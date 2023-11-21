@@ -60,6 +60,8 @@ logoutBtn.addEventListener("click", async function () {
 
     if (response.ok) {
       // 로그아웃 성공 시 클라이언트 UI 변경
+      loginForm[0].value = "";
+      loginForm[1].value = "";
       h3.innerText = "로그인 후 서비스를 이용하세요";
       loggedInUserId.style.display = "none";
       loginForm.style.display = "block";
