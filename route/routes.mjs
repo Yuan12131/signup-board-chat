@@ -1,15 +1,13 @@
 import express from "express";
 import fs from "fs/promises"; // Promise 기반의 fs 모듈
 import path from "path";
-import {
-  readJsonFile,
-  insertRecords,
-  pool,
-} from "../database/signup-database.mjs";
+import { readJsonFile, insertRecords, pool } from "../database/signup-database.mjs";
+import { insertBoardRecords } from "../database/board-database.mjs";
 import session from "express-session";
 
 const router = express.Router();
-const jsonFilePath = new URL("../data/signUp.json", import.meta.url).pathname;
+const signupJsonFile = new URL("../data/signUp.json", import.meta.url).pathname;
+const boardJsonFile = new URL("../data/board.json", import.meta.url).pathname;
 
 // 세션 설정
 router.use(
@@ -123,7 +121,7 @@ router.post("/signup", async (req, res) => {
     // 업데이트된 JSON 데이터를 파일에 쓰기
     await fs.writeFile("./data/signUp.json", JSON.stringify(formData, null, 2));
 
-    const jsonData = await readJsonFile(jsonFilePath);
+    const jsonData = await readJsonFile(signupJsonFile);
     const inputRecords = jsonData.inputRecords || [];
 
     await insertRecords(inputRecords);
@@ -159,21 +157,17 @@ router.post("/check-id-duplicate", async (req, res) => {
 });
 
 async function checkIdDuplicate(signupId) {
-  // 여기에서는 가정일 뿐이며, 실제로는 데이터베이스에서 아이디를 검색하여 중복 여부를 판단해야 합니다.
-  // MySQL을 사용한다고 가정하고, 실제 코드는 사용하는 데이터베이스에 따라 다를 수 있습니다.
   const selectQuery = "SELECT COUNT(*) as count FROM users WHERE signupId = ?";
   const [result] = await pool.query(selectQuery, [signupId]);
 
   // 결과에서 중복 여부 확인
   const isDuplicate = result[0].count > 0;
-
   return isDuplicate;
 }
 
 // '/board' 경로에 대한 POST 요청 처리
 router.post("/board", async (req, res) => {
   try {
-    // POST 요청에서 속성 : name, password, email을 추출을 위한 비구조화 할당
     const { title, content } = req.body;
 
     const userId = req.session.user.id; // 현재 로그인된 사용자의 ID
@@ -201,10 +195,10 @@ router.post("/board", async (req, res) => {
     // 업데이트된 JSON 데이터를 파일에 쓰기
     await fs.writeFile("./data/board.json", JSON.stringify(formData, null, 2));
 
-    const jsonData = await readJsonFile(jsonFilePath);
+    const jsonData = await readJsonFile(boardJsonFile);
     const inputRecords = jsonData.inputRecords || [];
 
-    await insertBoardRecord(inputRecords);
+    await insertBoardRecords(inputRecords);
 
     // 성공 응답 클라이언트에 전송
     res.json({
