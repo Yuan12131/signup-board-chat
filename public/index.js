@@ -9,17 +9,20 @@ const logoutBtn = document.getElementById("logoutBtn");
 const loginForm = document.getElementById("loginForm");
 const loggedInUserId = document.getElementById("loggedInUserId");
 const h3 = document.querySelector("h3");
+const boardLink = document.querySelector(".board");
+const chatLink = document.querySelector(".chat");
+
 
 // 로그인 함수
 loginBtn.addEventListener("click", async function () {
-  const userId = document.getElementById('userId').value;
-  const userPassword = document.getElementById('userPassword').value;
+  const userId = document.getElementById("userId").value;
+  const userPassword = document.getElementById("userPassword").value;
 
   try {
-    const response = await fetch('/login', {
-      method: 'POST',
+    const response = await fetch("/login", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         signupId: userId,
@@ -31,7 +34,7 @@ loginBtn.addEventListener("click", async function () {
 
     if (response.ok) {
       // 로그인 성공 시
-      console.log('Login successful');
+      console.log("Login successful");
       h3.innerText = userId + "님 반갑습니다!";
       loggedInUserId.style.display = "block";
       loginForm.style.display = "none";
@@ -39,24 +42,40 @@ loginBtn.addEventListener("click", async function () {
       signupBtn.style.display = "none";
     } else {
       // 로그인 실패 시
-      console.error('Login failed:', result);
-      alert("올바른 ID와 PASSWORD를 입력해주세요")
+      console.error("Login failed:", result);
+      alert("올바른 ID와 PASSWORD를 입력해주세요");
     }
   } catch (error) {
-    console.error('Error during login:', error);
+    console.error("Error during login:", error);
     alert("로그인 중 오류가 발생했습니다.");
   }
 });
 
 // 로그아웃 함수
-logoutBtn.addEventListener("click", function () {
-  // 로그아웃 시 초기화
-  h3.innerText = "로그인 후 서비스를 이용하세요"
-  loggedInUserId.style.display = "none";
-  loginForm.style.display = "block";
-  logoutBtn.style.display = "none";
-  signupBtn.style.display = "block";
+logoutBtn.addEventListener("click", async function () {
+  try {
+    const response = await fetch("/logout", {
+      method: "GET",
+    });
+
+    if (response.ok) {
+      // 로그아웃 성공 시 클라이언트 UI 변경
+      h3.innerText = "로그인 후 서비스를 이용하세요";
+      loggedInUserId.style.display = "none";
+      loginForm.style.display = "block";
+      loginForm.value = "";
+      logoutBtn.style.display = "none";
+      signupBtn.style.display = "block";
+      console.log("Logout successful");
+    } else {
+      // 로그아웃 실패 시 처리
+      console.error("Logout failed:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Network error during logout:", error);
+  }
 });
+
 
 // 회원가입 모달창 이벤트 리스너
 signupBtn.addEventListener("click", () => {
@@ -93,17 +112,6 @@ function addSubmitEventListener() {
           h3.textContent = `${serverData.formData.signupId}님, 가입에 성공했습니다!`;
           signupModal.style.display = "none";
           indexOverlay.style.display = "none";
-
-          // 이동할 페이지 설정
-          const boardLink = document.querySelector(".board");
-          boardLink.addEventListener("click", function () {
-            window.location.href = "/board.html";
-          });
-
-          const chatLink = document.querySelector(".chat");
-          chatLink.addEventListener("click", function () {
-            window.location.href = "/chat.html";
-          });
         } else {
           // 회원가입 실패 시
           console.error("HTTP 오류:", response.status);
@@ -119,3 +127,43 @@ function addSubmitEventListener() {
     console.error("Error: signupForm element not found.");
   }
 }
+
+// boardLink 클릭 시
+boardLink.addEventListener("click", async function () {
+  try {
+    const response = await fetch("/check-session", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP 오류! 상태 코드: ${response.status}`);
+    }
+    // 성공적으로 데이터를 받아왔을 때 처리
+    window.location.href = "/board.html";
+  } catch (error) {
+    // 오류가 발생했을 때 처리
+    console.error("GET 요청 실패:", error);
+    alert("로그인 후 이용해주세요");
+  }
+});
+
+// chatLink 클릭 시
+chatLink.addEventListener("click", async function () {
+  try {
+    const response = await fetch("/check-session", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP 오류! 상태 코드: ${response.status}`);
+    }
+    // 성공적으로 데이터를 받아왔을 때 처리
+    window.location.href = "/chat.html";
+  } catch (error) {
+    // 오류가 발생했을 때 처리
+    console.error("GET 요청 실패:", error);
+    alert("로그인 후 이용해주세요");
+  }
+});
