@@ -3,11 +3,11 @@ const closeWriteModal = document.getElementById("closeWriteModal");
 const closeReadModal = document.getElementById("closeReadModal");
 const writeModal = document.getElementById("writeModal");
 const readModal = document.getElementById("readModal");
-const readContent = document.getElementById("readContent")
-const readTitle = document.getElementById("readTitle")
+const readContent = document.getElementById("readContent");
+const readTitle = document.getElementById("readTitle");
 const overlay = document.getElementById("overlay");
 // 각각의 글 제목 클릭 시 해당 글의 내용을 모달에 출력
-const itemRows = document.querySelectorAll(".item-row"); 
+const itemRows = document.querySelectorAll(".item-row");
 
 const boardForm = document.getElementById("boardForm");
 
@@ -44,7 +44,7 @@ boardForm.addEventListener("submit", async function (event) {
       // 글쓰기 성공 시
       writeModal.style.display = "none";
       overlay.style.display = "none";
-      loadPosts()
+      loadPosts();
     } else {
       // 글쓰기 실패 시
       console.error("HTTP 오류:", response.status);
@@ -75,7 +75,21 @@ function displayPosts(posts) {
 
   posts.forEach((post) => {
     const row = tableBody.insertRow();
-    row.innerHTML = `<td class="title-cell">${post.title}</td><td>${post.userId}</td><td>${post.timestamp}</td>`;
+    // post.timestamp를 새로운 형식으로 변환
+    const dateObject = new Date(post.timestamp);
+    const options = {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      hour12: false,
+      timeZone: "UTC",
+    };
+    const formattedTimestamp = dateObject.toLocaleString("en-US", options);
+
+    row.innerHTML = `<td class="title-cell">${post.title}</td><td>${post.userId}</td><td>${formattedTimestamp}</td>`;
     row.addEventListener("click", () => displayPostContent(post));
   });
 }
@@ -87,7 +101,7 @@ function displayPostContent(post) {
   readModal.style.display = "block";
 }
 
-// 모달 닫기
+// 글 읽기 모달 닫기
 closeReadModal.addEventListener("click", () => {
   readModal.style.display = "none";
 });
