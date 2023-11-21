@@ -175,6 +175,8 @@ router.post("/board", async (req, res) => {
   try {
     // POST 요청에서 속성 : name, password, email을 추출을 위한 비구조화 할당
     const { title, content } = req.body;
+
+    const userId = req.session.user.id; // 현재 로그인된 사용자의 ID
     // timestamp를 MySQL datetime 형식('YYYY-MM-DD HH:mm:ss')으로 변환
     const timestamp = new Date()
       .toISOString()
@@ -187,7 +189,7 @@ router.post("/board", async (req, res) => {
 
     // 새로운 레코드 객체를 생성
     const newRecord = {
-      id: signupId,
+      userId: userId,
       title: title,
       content: content,
       timestamp: timestamp,
@@ -202,20 +204,20 @@ router.post("/board", async (req, res) => {
     const jsonData = await readJsonFile(jsonFilePath);
     const inputRecords = jsonData.inputRecords || [];
 
-    await insertRecords(inputRecords);
+    await insertBoardRecord(inputRecords);
 
     // 성공 응답 클라이언트에 전송
     res.json({
       status: "success",
       formData: {
-        id: id,
+        userId: userId,
         title: title,
         content: content,
         timestamp: timestamp,
       },
     });
   } catch (error) {
-    console.error("Error handling signup:", error);
+    console.error("Error handling board:", error);
     res.status(500).send("Internal Server Error");
   }
 });
