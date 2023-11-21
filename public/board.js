@@ -3,6 +3,8 @@ const closeWriteModal = document.getElementById("closeWriteModal");
 const closeReadModal = document.getElementById("closeReadModal");
 const writeModal = document.getElementById("writeModal");
 const readModal = document.getElementById("readModal");
+const readContent = document.getElementById("readContent")
+const readTitle = document.getElementById("readTitle")
 const overlay = document.getElementById("overlay");
 // 각각의 글 제목 클릭 시 해당 글의 내용을 모달에 출력
 const itemRows = document.querySelectorAll(".item-row"); 
@@ -33,19 +35,44 @@ closeReadModal.addEventListener("click", () => {
   overlay.style.display = "none";
 });
 
-boardForm.addEventListener("submit", async (event) => {
-  event.preventDefault(); // 폼의 기본 동작을 막음
-    const formData = new FormData(boardForm);
+boardForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
 
-    try {
-        const response = await fetch("/board", {
-        method: "POST",
-        body: JSON.stringify(Object.fromEntries(formData)), // FormData를 객체로 변환
-        headers: {
-            "Content-Type": "application/json",
-        },
-        });
-    } catch (error) {
-        console.error("에러:", error);
+  const formData = new FormData(boardForm);
+
+  try {
+    // 회원가입 진행
+    const response = await fetch("/board", {
+      method: "POST",
+      body: JSON.stringify(Object.fromEntries(formData)),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      // 글쓰기 성공 시
+      loadPosts()
+    } else {
+      // 글쓰기 실패 시
+      console.error("HTTP 오류:", response.status);
+      alert("오류가 발생했습니다. 서버에 연결할 수 없습니다.");
     }
+  } catch (error) {
+    // 오류 발생 시
+    console.error("서버 오류:", error);
+    alert("오류가 발생했습니다. 서버에 연결할 수 없습니다.");
+  }
 });
+
+
+// 글 목록 로드
+async function loadPosts() {
+  const response = await fetch("/get-posts");
+  if (response.ok) {
+    const posts = await response.json();
+    displayPosts(posts);
+  } else {
+    console.error("글 목록 로드 실패:", response.statusText);
+  }
+}
