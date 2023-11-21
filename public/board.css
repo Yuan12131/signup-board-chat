@@ -11,22 +11,81 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 20px;
 }
 
 body {
   font-family: Arial, sans-serif;
 }
 
+button{
+  width: 10vw;
+  height: 5vh;
+  margin: 10px;
+  background-color:rgb(175, 131, 215);
+  border: 0;
+  color: white;
+  cursor: pointer;
+}
+
+table {
+  border-collapse: collapse;
+  width: 90vw;
+}
+
+table, th, td {
+  border: 1px solid #ddd; /* 테두리 선 스타일 지정 */
+}
+
+th, td {
+  padding: 12px; /* 셀 안의 여백 설정 */
+  text-align: left;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2; /* 짝수 행 배경색 지정 */
+}
+
+tr:hover {
+  background-color: #ddd; /* 마우스 호버 시 배경색 지정 */
+}
+
+#closeWriteModal{
+  position: relative;
+  bottom: 68px;
+  left: 150px;
+}
+
 #writeModal {
+  width: 50vw;
+  height: 80vh;
   display: none;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding: 20px;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   z-index: 1;
+  padding: 30px;
+  text-align: center;
+}
+
+#title{
+  width: 40vw;
+  height: 5vh;
+  margin-bottom: 2vh;
+  margin-left: 2vh;
+  font-size: 1rem;
+  border: 1px solid black;
+}
+
+#content{
+  width: 40vw;
+  height: 60vh;
+  font-size: 1rem;
+  margin-left: 2vh;
+  border: 1px solid black;
 }
 
 #overlay {
@@ -41,6 +100,8 @@ body {
 }
 
 #readModal {
+  width: 50vw;
+  height: 80vh;
   display: none;
   position: fixed;
   top: 50%;
@@ -50,4 +111,17 @@ body {
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   z-index: 1;
+}
+
+#readTitle{
+  width: 40vw;
+  height: 5vh;
+  margin-bottom: 2vh;
+  font-size: 1rem;
+}
+
+#readContent{
+  width: 40vw;
+  height: 60vh;
+  font-size: 1rem;
 }
