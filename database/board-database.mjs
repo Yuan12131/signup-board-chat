@@ -1,25 +1,7 @@
-import fs from "fs/promises";
-import mysql from "mysql2/promise";
-import { dbConfig } from "./config.mjs";
+import { pool } from "./config.mjs";
 
 // MySQL 연결 풀 생성
-const pool = mysql.createPool(dbConfig);
 const tableName = "board";
-
-/**
- * JSON 파일을 비동기적으로 읽어오는 함수
- * @param {string} filePath - JSON 파일의 경로
- * @returns {Promise<object>} - 파싱된 JSON 데이터
- */
-async function readJsonFile(filePath) {
-  try {
-    const data = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(data);
-  } catch (error) {
-    console.error(`JSON 파일 읽기 오류 (${filePath}):`, error);
-    throw error;
-  }
-}
 
 /**
  * 사용자 레코드를 users 테이블에 삽입하는 함수
@@ -29,22 +11,6 @@ async function readJsonFile(filePath) {
 async function insertBoardRecord(record) {
   try {
     const { userId, title, content, timestamp, imagePath } = record;
-
-        // 중복 체크 쿼리
-        const duplicateCheckQuery = `
-        SELECT * FROM ${tableName} WHERE userId = ? AND content = ? AND timestamp = ?;
-      `;
-  
-      const duplicateCheckValues = [userId, content, timestamp, imagePath];
-      const [existingRecords] = await pool.query(
-        duplicateCheckQuery,
-        duplicateCheckValues
-      );
-  
-      if (existingRecords.length > 0) {
-        // 이미 존재하는 레코드가 있으면 중복 처리
-        return { status: "skipped", message: "레코드가 이미 존재합니다" };
-      }
 
     const insertQuery = `
       INSERT INTO ${tableName} (userId, title, content, timestamp, imagePath)
@@ -75,4 +41,4 @@ async function insertBoardRecords(records) {
   }
 }
 
-export { readJsonFile, insertBoardRecords, pool };
+export { insertBoardRecords };
