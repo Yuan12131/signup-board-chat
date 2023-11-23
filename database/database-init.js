@@ -19,6 +19,7 @@ const createBoardTableQuery = `
     content TEXT NOT NULL,
     userId VARCHAR(255) NOT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    imagePath VARCHAR(255),
     FOREIGN KEY (userId) REFERENCES users(signupId)
   );
 `;
