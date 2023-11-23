@@ -28,14 +28,14 @@ async function readJsonFile(filePath) {
  */
 async function insertBoardRecord(record) {
   try {
-    const { userId, title, content, timestamp } = record;
+    const { userId, title, content, timestamp, imagePath } = record;
 
         // 중복 체크 쿼리
         const duplicateCheckQuery = `
         SELECT * FROM ${tableName} WHERE userId = ? AND content = ? AND timestamp = ?;
       `;
   
-      const duplicateCheckValues = [userId, content, timestamp];
+      const duplicateCheckValues = [userId, content, timestamp, imagePath];
       const [existingRecords] = await pool.query(
         duplicateCheckQuery,
         duplicateCheckValues
@@ -47,11 +47,11 @@ async function insertBoardRecord(record) {
       }
 
     const insertQuery = `
-      INSERT INTO ${tableName} (userId, title, content, timestamp)
-      VALUES (?, ?, ?, ?);
+      INSERT INTO ${tableName} (userId, title, content, timestamp, imagePath)
+      VALUES (?, ?, ?, ?, ?);
     `;
 
-    const values = [userId, title, content, timestamp];
+    const values = [userId, title, content, timestamp, imagePath];
     const [result] = await pool.query(insertQuery, values);
     return result;
   } catch (err) {
