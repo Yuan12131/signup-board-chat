@@ -24,12 +24,24 @@ const createBoardTableQuery = `
   );
 `;
 
-const createChatTableQuery = `CREATE TABLE IF NOT EXISTS chat (
+const createChatRoomsTableQuery = `
+CREATE TABLE IF NOT EXISTS rooms (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  Message TEXT NOT NULL,
   userId VARCHAR(255) NOT NULL,
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   FOREIGN KEY (userId) REFERENCES users(signupId)
+);
+`;
+
+const createChatMessageTableQuery = `
+CREATE TABLE IF NOT EXISTS messages (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  room_id INT,
+  userId VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  FOREIGN KEY (room_id) REFERENCES rooms(id),
+  FOREIGN KEY (userId) REFERENCES rooms(userId)
 );
 `;
 
@@ -38,7 +50,9 @@ async function initializeDatabase() {
   try {
     const [result1] = await pool.query(createUsersTableQuery);
     const [result2] = await pool.query(createBoardTableQuery);
-    const [result3] = await pool.query(createChatTableQuery);
+    const [result3] = await pool.query(createChatRoomsTableQuery);
+    const [result4] = await pool.query(createChatMessageTableQuery);
+
     console.log("table created successfully");
   } catch (err) {
     console.error("Error creating users table:", err);
