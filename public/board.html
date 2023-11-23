@@ -10,12 +10,12 @@
 
 <body>
   <div id="root">
-    <h1><a href="/index.html">HOME</a></h1>
-    <h2>LIST</h2>
+    <h1><a href="/">HOME</a></h1>
+    <h2>BOARD</h2>
 
     <table id="postTable">
       <thead>
-        <tr>
+        <tr class="title-row">
           <th>TITLE</th>
           <th>NAME</th>
           <th>DATE</th>
@@ -23,26 +23,31 @@
       </thead>
       <tbody>
         <tr class="item-row" data-content="{{item.content}}">
-          <td class="title-cell">{{item.subject}}</td>
+          <td class="title-cell">  {{item.subject}}
+            {{#if item.imagePath}}
+            <span class="icon">📷</span>
+            {{/if}}
+          {{item.subject}}
+          </td>
           <td>{{item.username}}</td>
           <td>{{item.date}}</td>
         </tr>
       </tbody>
     </table>
 
-    <!-- 글읽기 모달 창 -->
-    <div id="readModal">
-      <div id="readTitle"></div>
-      <div id="readContent"></div>
-      <button id="closeReadModal">CLOSE</button>
-    </div>
+<!-- 글읽기 모달 창 -->
+<div id="readModal">
+  <div id="readTitle"></div>
+  <div id="readContent"></div>
+  <button id="closeReadModal">CLOSE</button>
+</div>
 
     <button id="openWriteModal">글쓰기</button>
 
     <!-- 글쓰기 모달 창 -->
     <div id="writeModal">
       <h2>⌨️</h2>
-      <form method="post" action="/board" id="boardForm">
+      <form method="post" action="/board" id="boardForm" enctype="multipart/form-data">
         <label for="title"></label>
         <input type="text" id="title" name="title" placeholder="제목을 입력하세요" required>
         <br>
