@@ -5,6 +5,7 @@ import { readJsonFile, insertRecords } from "../database/signup-database.mjs";
 import { insertBoardRecords } from "../database/board-database.mjs";
 import session from "express-session";
 import { pool } from "../database/config.mjs";
+import multer from "multer";
 
 const router = express.Router();
 const signupJsonFile = new URL("../data/signUp.json", import.meta.url).pathname;
@@ -21,6 +22,8 @@ router.use(
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
+// 예시: 이미지가 저장된 디렉토리를 정적 파일로 제공하는 설정
+router.use('/data/uploadsImg', express.static('data/uploadsImg'));
 
 // 로그인 세션 확인
 router.get("/check-session", (req, res) => {
@@ -166,8 +169,20 @@ async function checkIdDuplicate(signupId) {
   return isDuplicate;
 }
 
+// 이미지를 저장할 디렉토리 설정
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./data/uploadsImg"); // 'uploads/' 디렉토리에 이미지를 저장
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname); // 파일명 중복을 피하기 위해 고유한 파일명 생성
+  },
+});
+
+const upload = multer({ storage: storage });
+
 // '/board' 경로에 대한 POST 요청 처리
-router.post("/board", async (req, res) => {
+router.post("/board", upload.single("image"), async (req, res) => {
   try {
     const { title, content } = req.body;
 
@@ -177,7 +192,11 @@ router.post("/board", async (req, res) => {
       .toISOString()
       .replace(/T/, " ")
       .replace(/\.\d+Z$/, "");
-    // signUp.json 파일을 비동기적으로 가져오기
+
+    // 이미지 파일에 대한 정보
+    const imagePath = req.file ? req.file.path : null;
+
+    // board.json 파일을 비동기적으로 가져오기
     const data = await fs.readFile("./data/board.json", "utf-8");
     // JSON 데이터로 파싱
     const formData = JSON.parse(data);
@@ -188,6 +207,7 @@ router.post("/board", async (req, res) => {
       title: title,
       content: content,
       timestamp: timestamp,
+      imagePath: imagePath,
     };
 
     // 기존 데이터 배열에 새 레코드를 추가
@@ -209,6 +229,7 @@ router.post("/board", async (req, res) => {
         title: title,
         content: content,
         timestamp: timestamp,
+        imagePath: imagePath,
       },
     });
   } catch (error) {
@@ -218,10 +239,10 @@ router.post("/board", async (req, res) => {
 });
 
 // GET /get-posts 엔드포인트에 대한 처리
-router.get('/get-posts', async (req, res) => {
+router.get("/get-posts", async (req, res) => {
   try {
     // 시간 순으로 정렬된 글 목록 조회 쿼리
-    const query = 'SELECT * FROM board ORDER BY timestamp DESC';
+    const query = "SELECT userId, title, content, timestamp, imagePath FROM board ORDER BY timestamp DESC";
 
     // 쿼리 실행
     const [results] = await pool.query(query);
@@ -229,13 +250,13 @@ router.get('/get-posts', async (req, res) => {
     // 정상적으로 글 목록을 조회한 경우 클라이언트로 보내기
     res.json(results);
   } catch (err) {
-    console.error('글 목록 조회 오류:', err);
-    res.status(500).json({ error: '서버 오류' });
+    console.error("글 목록 조회 오류:", err);
+    res.status(500).json({ error: "서버 오류" });
   }
 });
 
 // 프로그램 종료 시 MySQL 연결 종료
-process.on('SIGINT', async () => {
+process.on("SIGINT", async () => {
   await pool.end();
   process.exit();
 });
