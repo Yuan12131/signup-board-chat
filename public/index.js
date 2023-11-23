@@ -47,7 +47,6 @@ loginBtn.addEventListener("click", async function () {
     }
   } catch (error) {
     console.error("Error during login:", error);
-    alert("로그인 중 오류가 발생했습니다.");
   }
 });
 
@@ -65,12 +64,10 @@ logoutBtn.addEventListener("click", async function () {
       h3.innerText = "로그인 후 서비스를 이용하세요";
       loggedInUserId.style.display = "none";
       loginForm.style.display = "block";
-      loginForm.value = "";
       logoutBtn.style.display = "none";
       signupBtn.style.display = "block";
       console.log("Logout successful");
     } else {
-      // 로그아웃 실패 시 처리
       console.error("Logout failed:", response.statusText);
     }
   } catch (error) {
@@ -120,13 +117,11 @@ idCheckBtn.addEventListener("click", async function () {
     } else {
       // 서버에서 중복 확인에 대한 응답이 실패한 경우
       console.error("HTTP 오류:", response.status);
-      h3.textContent = "오류가 발생했습니다.";
     }
   } catch (error) {
     // 오류 발생 시
     console.error("에러:", error);
-    h3.textContent = "오류가 발생했습니다. 서버에 연결할 수 없습니다.";
-  }
+s  }
 });
 
 // 회원가입 폼 데이터 처리 로직
@@ -160,14 +155,10 @@ function addSubmitEventListener() {
           signupModal.style.display = "none";
           indexOverlay.style.display = "none";
         } else {
-          // 회원가입 실패 시
           console.error("HTTP 오류:", response.status);
-          h3.textContent = "오류가 발생했습니다.";
         }
       } catch (error) {
-        // 오류 발생 시
         console.error("에러:", error);
-        h3.textContent = "오류가 발생했습니다. 서버에 연결할 수 없습니다.";
       }
     });
   } else {
