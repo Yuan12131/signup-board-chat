@@ -1,0 +1,172 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  overflow: auto;
+}
+
+.main {
+  width: 100vw;
+  height: 100vh;
+  background-color: #acace9d9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+}
+
+#hamburger {
+  display: none;
+}
+
+#hamburger+label {
+  display: block;
+  width: 4vw;
+  height: 4vh;
+  position: relative;
+  cursor: pointer;
+}
+
+#hamburger+label span {
+  display: block;
+  position: absolute;
+  width: 80%;
+  height: 7px;
+  border-radius: 30px;
+  background-color: rgb(132, 78, 143);
+  transition: all 0.35s;
+}
+
+#hamburger+label span:nth-child(1) {
+  top: 0;
+}
+
+#hamburger+label span:nth-child(2) {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#hamburger+label span:nth-child(3) {
+  bottom: 0;
+}
+
+#hamburger:checked+label {
+  z-index: 99;
+}
+
+.sidebar {
+  width: 20vw;
+  height: 100vh;
+  background: rgba(200, 148, 245, 0.689);
+  position: fixed;
+  top: 0;
+  left: -100%;
+  z-index: 98;
+  transition: all 0.35s;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav_mobile {
+  position: absolute;
+  top: 10vh;
+  width: 100%;
+  height: 60vh;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  font-size: 1.5rem;
+  flex-wrap: nowrap;
+  overflow: auto;
+  margin-top: 20px;
+}
+
+.nav_mobile li {
+  text-align: center;
+  border: 1px solid rgb(88, 6, 88);
+  color: aliceblue;
+}
+
+#hamburger:checked+label+div {
+  left: 0;
+}
+
+.sidebar a {
+  color: whitesmoke;
+  display: block;
+  font-weight: bold;
+  line-height: 40px;
+  padding: 0;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.4s;
+  padding: 0;
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+}
+
+h2 {
+  text-align: center;
+  position: relative;
+  top: 75px;
+  margin-bottom: 30px;
+}
+
+.user {
+  width: 20vw;
+  height: 10vh;
+  text-align: center;
+  position: relative;
+  top: 80vh;
+  font-size: 3rem;
+}
+
+.title {
+  width: 20vw;
+  height: 10vh;
+  line-height: 10vh;
+  text-align: center;
+  font-size: 2rem;
+  color: whitesmoke;
+}
+
+.chat {
+  position: relative;
+  top: 20vh;
+  width: 20vw;
+  height: 30vh;
+  overflow: auto;
+}
+
+#chatForm {
+  position: relative;
+  top: 40vh;
+}
+
+#chatInput {
+  width: 40vw;
+  height: 7vh;
+  font-size: 1.5rem;
+}
+
+#chatBtn {
+  width: 7vw;
+  height: 3vh;
+  margin: 10px;
+  background-color:rgb(175, 131, 215);
+  border: 0;
+  color: white;
+  cursor: pointer;
+}
