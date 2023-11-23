@@ -6,9 +6,7 @@ const readModal = document.getElementById("readModal");
 const readContent = document.getElementById("readContent");
 const readTitle = document.getElementById("readTitle");
 const overlay = document.getElementById("overlay");
-// 각각의 글 제목 클릭 시 해당 글의 내용을 모달에 출력
-const itemRows = document.querySelectorAll(".item-row");
-
+const itemRows = document.querySelectorAll(".item-row"); //각각의 글 제목 클릭 시 해당 글의 내용을 모달에 출력
 const boardForm = document.getElementById("boardForm");
 
 openWriteModal.addEventListener("click", () => {
