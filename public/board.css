@@ -172,8 +172,8 @@ button{
 }
 
 #readContent img {
-  max-width: 60%;  /* 이미지의 최대 너비를 부모 요소의 100%로 설정하여 원본 사이즈 비유지 */
-  height: auto;     /* 이미지의 높이를 자동으로 조정하여 원본 비율 유지 */
-  margin-top: 50px;     /* 이미지 주위에 10px의 마진 추가 */
+  max-width: 60%;
+  height: auto;
+  margin-top: 50px;
   cursor: default;
 }
