@@ -34,10 +34,7 @@ boardForm.addEventListener("submit", async function (event) {
   try {
     const response = await fetch("/board", {
       method: "POST",
-      body: JSON.stringify(Object.fromEntries(formData)),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      body: formData, // 이미 FormData 객체를 사용하므로 JSON.stringify가 필요하지 않음
     });
 
     if (response.ok) {
@@ -57,6 +54,10 @@ boardForm.addEventListener("submit", async function (event) {
   }
 });
 
+(async () => {
+  await loadPosts();
+})();
+
 // 글 목록 로드
 async function loadPosts() {
   const response = await fetch("/get-posts");
@@ -75,6 +76,7 @@ function displayPosts(posts) {
 
   posts.forEach((post) => {
     const row = tableBody.insertRow();
+
     // post.timestamp를 새로운 형식으로 변환
     const dateObject = new Date(post.timestamp);
     const options = {
@@ -89,15 +91,46 @@ function displayPosts(posts) {
     };
     const formattedTimestamp = dateObject.toLocaleString("en-US", options);
 
-    row.innerHTML = `<td class="title-cell">${post.title}</td><td>${post.userId}</td><td>${formattedTimestamp}</td>`;
+    // 제목에 아이콘 추가
+    const titleCell = document.createElement("td");
+    titleCell.classList.add("title-cell");
+    titleCell.innerHTML = post.imagePath
+      ? `<span class="icon">📷</span> ${post.title}`
+      : post.title;
+    row.appendChild(titleCell);
+
+    row.innerHTML += `<td>${post.userId}</td><td>${formattedTimestamp}</td>`;
+
     row.addEventListener("click", () => displayPostContent(post));
   });
 }
 
 // 글 내용 표시
 function displayPostContent(post) {
-  readTitle.textContent = post.title;
-  readContent.textContent = post.content;
+  readTitle.innerHTML = post.imagePath
+    ? `<span class="icon">📷</span> ${post.title}`
+    : post.title;
+
+  readContent.innerHTML = ''; // 기존 내용 초기화
+
+  // 글 내용 표시
+  const textRow = document.createElement("tr");
+  const textCell = document.createElement("td");
+  textCell.textContent = post.content;
+  textRow.appendChild(textCell);
+  readContent.appendChild(textRow);
+
+  // 이미지가 있는 경우 이미지 표시
+  if (post.imagePath) {
+    const imageRow = document.createElement("tr");
+    const imageCell = document.createElement("td");
+    const imageElement = document.createElement("img");
+    imageElement.src = post.imagePath;
+    imageCell.appendChild(imageElement);
+    imageRow.appendChild(imageCell);
+    readContent.appendChild(imageRow);
+  }
+
   readModal.style.display = "block";
 }
 
@@ -105,6 +138,3 @@ function displayPostContent(post) {
 closeReadModal.addEventListener("click", () => {
   readModal.style.display = "none";
 });
-
-// 초기 로드
-loadPosts();
