@@ -2,13 +2,10 @@ import express from "express";
 import routes from "./route/routes.mjs";
 
 const app = express();
-const port = 8080;
+const port = 8019;
 
 // 정적 파일 미들웨어 등록
 app.use(express.static("public"));
-
-// JSON 파싱 미들웨어 등록
-app.use(express.json());
 
 // 라우트 등록
 app.use("/", routes);
