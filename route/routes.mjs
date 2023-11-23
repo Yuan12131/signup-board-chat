@@ -1,11 +1,12 @@
 import express from "express";
 import fs from "fs/promises"; // Promise 기반의 fs 모듈
 import path from "path";
-import { readJsonFile, insertRecords } from "../database/signup-database.mjs";
-import { insertBoardRecords } from "../database/board-database.mjs";
 import session from "express-session";
-import { pool } from "../database/config.mjs";
 import multer from "multer";
+import { pool } from "../database/config.mjs";
+import { readJsonFile } from "../database/readJsonFile.mjs";
+import { insertRecords } from "../database/signup-database.mjs";
+import { insertBoardRecords } from "../database/board-database.mjs";
 
 const router = express.Router();
 const signupJsonFile = new URL("../data/signUp.json", import.meta.url).pathname;
