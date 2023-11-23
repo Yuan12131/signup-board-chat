@@ -1,23 +1,6 @@
-import fs from "fs/promises";
-import mysql from "mysql2/promise";
-import { dbConfig, pool } from "./config.mjs";
+import { pool } from "./config.mjs";
 
 const tableName = "users";
-
-/**
- * JSON 파일을 비동기적으로 읽어오는 함수
- * @param {string} filePath - JSON 파일의 경로
- * @returns {Promise<object>} - 파싱된 JSON 데이터
- */
-async function readJsonFile(filePath) {
-  try {
-    const data = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(data);
-  } catch (error) {
-    console.error(`JSON 파일 읽기 오류 (${filePath}):`, error);
-    throw error;
-  }
-}
 
 /**
  * 사용자 레코드를 users 테이블에 삽입하는 함수
@@ -74,4 +57,4 @@ async function insertRecords(records) {
   }
 }
 
-export { readJsonFile, insertRecords, pool };
+export { insertRecords };
