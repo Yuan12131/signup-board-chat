@@ -10,7 +10,7 @@ const createUsersTableQuery = `
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     UNIQUE KEY unique_signupId (signupId)
   );
-`;
+`
 
 const createBoardTableQuery = `
   CREATE TABLE IF NOT EXISTS board (
@@ -24,11 +24,21 @@ const createBoardTableQuery = `
   );
 `;
 
+const createChatTableQuery = `CREATE TABLE IF NOT EXISTS chat (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  Message TEXT NOT NULL,
+  userId VARCHAR(255) NOT NULL,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  FOREIGN KEY (userId) REFERENCES users(signupId)
+);
+`;
+
 // 데이터베이스 초기화 함수
 async function initializeDatabase() {
   try {
     const [result1] = await pool.query(createUsersTableQuery);
     const [result2] = await pool.query(createBoardTableQuery);
+    const [result3] = await pool.query(createChatTableQuery);
     console.log("table created successfully");
   } catch (err) {
     console.error("Error creating users table:", err);
