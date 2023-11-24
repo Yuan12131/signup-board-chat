@@ -27,7 +27,9 @@ const createBoardTableQuery = `
 const createChatRoomsTableQuery = `
 CREATE TABLE IF NOT EXISTS rooms (
   id INT AUTO_INCREMENT PRIMARY KEY,
+  roomId VARCHAR(255) NOT NULL,
   userId VARCHAR(255) NOT NULL,
+  isHost TINYINT(1) NOT NULL,
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   FOREIGN KEY (userId) REFERENCES users(signupId)
 );
@@ -36,12 +38,12 @@ CREATE TABLE IF NOT EXISTS rooms (
 const createChatMessageTableQuery = `
 CREATE TABLE IF NOT EXISTS messages (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  room_id INT,
+  roomId VARCHAR(255) NOT NULL,
   userId VARCHAR(255) NOT NULL,
+  isHost TINYINT(1) NOT NULL,
   message TEXT NOT NULL,
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  FOREIGN KEY (room_id) REFERENCES rooms(id),
-  FOREIGN KEY (userId) REFERENCES rooms(userId)
+  FOREIGN KEY (roomId) REFERENCES rooms(roomId)
 );
 `;
 
