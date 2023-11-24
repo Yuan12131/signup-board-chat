@@ -1,6 +1,6 @@
 import express from "express";
 import { createServer } from 'http';  // http 모듈 추가
-import { router, attachSocketEvents } from "./route/routes.mjs";
+import { router, attachSocketEvents, entryRooms } from "./route/routes.mjs";
 import { Server } from 'socket.io';
 import cors from 'cors';
 
@@ -19,6 +19,7 @@ app.use("/", router);
 
 // Socket.io 이벤트 리스너 추가
 attachSocketEvents(io); // attachSocketEvents 함수에 io를 전달하도록 수정
+entryRooms(io);
 
 server.listen(PORT, (err) => {
   if (err) {
