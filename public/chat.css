@@ -9,18 +9,11 @@
   height: 100vh;
   display: flex;
   overflow: auto;
+  background-color: rgb(172, 172, 233);
+
 }
 
-.main {
-  width: 100vw;
-  height: 100vh;
-  background-color: #acace9d9;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.btn {
+#hamburgerBtn {
   position: absolute;
   top: 15px;
   left: 15px;
@@ -65,7 +58,11 @@
   z-index: 99;
 }
 
-.sidebar {
+#hamburger:checked+label+div {
+  left: 0;
+}
+
+#sidebar {
   width: 20vw;
   height: 100vh;
   background: rgba(200, 148, 245, 0.689);
@@ -78,7 +75,7 @@
   flex-direction: column;
 }
 
-.nav_mobile {
+#roomList {
   position: absolute;
   top: 10vh;
   width: 100%;
@@ -92,15 +89,19 @@
   margin-top: 20px;
 }
 
-.nav_mobile li {
+#home {
+  text-align: center;
+  position: relative;
+  top: 75px;
+  margin-bottom: 30px;
+}
+
+#roomList li {
   text-align: center;
   border: 1px solid rgb(88, 6, 88);
   color: aliceblue;
 }
 
-#hamburger:checked+label+div {
-  left: 0;
-}
 
 .sidebar a {
   color: whitesmoke;
@@ -117,23 +118,26 @@
   cursor: pointer;
 }
 
-h2 {
-  text-align: center;
-  position: relative;
-  top: 75px;
-  margin-bottom: 30px;
-}
 
-.user {
+#user {
   width: 20vw;
   height: 10vh;
   text-align: center;
   position: relative;
   top: 80vh;
-  font-size: 3rem;
+  font-size: 2rem;
 }
 
-.title {
+#main {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(172, 172, 233);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#title {
   width: 20vw;
   height: 10vh;
   line-height: 10vh;
@@ -142,30 +146,26 @@ h2 {
   color: whitesmoke;
 }
 
-.chat {
+#chat {
   position: relative;
-  top: 20vh;
-  width: 20vw;
-  height: 30vh;
+  width: 80vw;
+  height: 70vh;
   overflow: auto;
-}
-
-#chatForm {
-  position: relative;
-  top: 40vh;
+  display: flex;
+  flex-direction: column;
 }
 
 #chatInput {
   width: 40vw;
-  height: 7vh;
+  height: 5vh;
   font-size: 1.5rem;
 }
 
 #chatBtn {
-  width: 7vw;
+  width: 5vw;
   height: 3vh;
   margin: 10px;
-  background-color:rgb(175, 131, 215);
+  background-color: rgb(175, 131, 215);
   border: 0;
   color: white;
   cursor: pointer;
