@@ -3,14 +3,22 @@ import fs from "fs/promises"; // Promise 기반의 fs 모듈
 import path from "path";
 import session from "express-session";
 import multer from "multer";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 import { pool } from "../database/config.mjs";
 import { readJsonFile } from "../database/readJsonFile.mjs";
 import { insertRecords } from "../database/signup-database.mjs";
 import { insertBoardRecords } from "../database/board-database.mjs";
+import { Server } from "socket.io";
+import { createServer } from "http";
 
+const app = express();
+const server = createServer(app);
 const router = express.Router();
 const signupJsonFile = new URL("../data/signUp.json", import.meta.url).pathname;
 const boardJsonFile = new URL("../data/board.json", import.meta.url).pathname;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // 세션 설정
 router.use(
@@ -24,7 +32,7 @@ router.use(
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 // 예시: 이미지가 저장된 디렉토리를 정적 파일로 제공하는 설정
-router.use('/data/uploadsImg', express.static('data/uploadsImg'));
+router.use("/data/uploadsImg", express.static("data/uploadsImg"));
 
 // 로그인 세션 확인
 router.get("/check-session", (req, res) => {
@@ -243,7 +251,8 @@ router.post("/board", upload.single("image"), async (req, res) => {
 router.get("/get-posts", async (req, res) => {
   try {
     // 시간 순으로 정렬된 글 목록 조회 쿼리
-    const query = "SELECT userId, title, content, timestamp, imagePath FROM board ORDER BY timestamp DESC";
+    const query =
+      "SELECT userId, title, content, timestamp, imagePath FROM board ORDER BY timestamp DESC";
 
     // 쿼리 실행
     const [results] = await pool.query(query);
@@ -256,10 +265,31 @@ router.get("/get-posts", async (req, res) => {
   }
 });
 
+const attachSocketEvents = (io) => {
+  // 방 목록
+  const rooms = [
+    { id: 1, hostId: "vv", roomId: "Room 1" },
+    { id: 2, hostId: "sh", roomId: "Room 2" },
+    { id: 3, hostId: "hello", roomId: "Room 3" },
+  ];
+
+  io.on("connection", (socket) => {
+    console.log("A user connected");
+
+    // 클라이언트로 방 목록 전송
+    socket.emit("roomList", rooms);
+
+    // 연결이 끊어졌을 때 처리
+    socket.on("disconnect", () => {
+      console.log("A user disconnected");
+    });
+  });
+};
+
 // 프로그램 종료 시 MySQL 연결 종료
 process.on("SIGINT", async () => {
   await pool.end();
   process.exit();
 });
 
-export default router;
+export { router, attachSocketEvents };
