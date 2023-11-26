@@ -9,6 +9,7 @@ import { pool } from "../database/config.mjs";
 import { readJsonFile } from "../database/readJsonFile.mjs";
 import { insertRecords } from "../database/signup-database.mjs";
 import { insertBoardRecords } from "../database/board-database.mjs";
+
 import { Server } from "socket.io";
 import { createServer } from "http";
 
@@ -20,14 +21,6 @@ const boardJsonFile = new URL("../data/board.json", import.meta.url).pathname;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// 세션 설정
-router.use(
-  session({
-    secret: "your-secret-key",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
@@ -265,6 +258,29 @@ router.get("/get-posts", async (req, res) => {
   }
 });
 
+async function insertRoomsRecord(record) {
+  try {
+    const { roomId, userId, isHost, } = record;
+
+    const timestamp = new Date()
+      .toISOString()
+      .replace("T", " ")
+      .replace("Z", "");
+
+    const insertQuery = `
+  INSERT INTO rooms (roomId, userId, isHost, timestamp)
+  VALUES (?, ?, ?, ?);
+`;
+
+    const values = [roomId, userId, isHost, timestamp];
+    const [result] = await pool.query(insertQuery, values);
+    return result;
+  } catch (err) {
+    console.error("rooms 테이블에 데이터를 삽입하는 중 오류 발생:", err);
+    throw err;
+  }
+}
+
 const attachSocketEvents = (io) => {
   // 방 목록
   const rooms = [
@@ -283,54 +299,41 @@ const attachSocketEvents = (io) => {
     socket.on("disconnect", () => {
       console.log("A user disconnected");
     });
+
+    // 방 입장 처리
+    socket.on("joinRoom", async (data) => {
+      const { roomId } = data;
+
+      // 세션에서 사용자 ID 가져오기
+      const userId = socket.request.session.user.id;
+
+      try {
+        // 여기에서 DB 조회를 통해 방의 정보를 확인하고, 호스트 여부를 판단하여 결과를 반환
+        const roomInfo = rooms.find((room) => room.roomId === roomId);
+
+        if (roomInfo) {
+          // 호스트 여부에 따라 isHost 값 설정
+          const isHost = roomInfo.hostId === userId;
+
+          // DB에 입장 정보 저장
+          insertRoomsRecord({
+            roomId: roomId,
+            userId: userId,
+            isHost: isHost,
+            timestamp: new Date().toISOString(),
+          });
+        } else {
+          // 방이 존재하지 않는 경우 등에 대한 처리
+          // 클라이언트에 에러 메시지 등을 전송
+          socket.emit("joinRoomError", { message: "Invalid room or user" });
+        }
+      } catch (error) {
+        console.error("Error during user authentication:", error);
+        socket.emit("joinRoomError", { message: "User authentication failed" });
+      }
+    });
   });
 };
-
-const entryRooms = (io) => {
-  io.on('joinRoom', async (data) => {
-    const { roomId, userId } = data;
-    console.log(data)
-    try {
-      // 사용자 인증
-      const user = await authenticateUser(userId);
-
-      // 여기에서 DB 조회를 통해 방의 정보를 확인하고, 호스트 여부를 판단하여 결과를 반환
-      const roomInfo = saveRoomToDB(roomId, user.signupId);
-
-      if (roomInfo && roomInfo.hostId === user.signupId) {
-        // 호스트인 경우
-        // DB에 입장 정보 저장
-        saveRoomToDB(roomId, user.signupId, true);
-      } else if (roomInfo && roomInfo.hostId !== user.signupId) {
-        // 일반 사용자인 경우
-        // DB에 입장 정보 저장
-        saveRoomToDB(roomId, user.signupId, false);
-      } else {
-        // 방이 존재하지 않는 경우 등에 대한 처리
-        // 클라이언트에 에러 메시지 등을 전송
-        socket.emit('joinRoomError', { message: 'Invalid room or user' });
-      }
-    } catch (error) {
-      console.error('Error during user authentication:', error);
-      socket.emit('joinRoomError', { message: 'User authentication failed' });
-    }
-  });
-
-  // DB에 입장 정보 저장 함수
-  function saveRoomToDB(roomId, userId, isHost) {
-    const timestamp = new Date().toISOString();
-
-    // 적절한 쿼리를 사용하여 DB에 정보 저장
-    const insertQuery = 'INSERT INTO rooms (roomId, userId, isHost, timestamp) VALUES (?, ?, ?, ?)';
-    pool.query(insertQuery, [roomId, userId, isHost, timestamp])
-      .then((result) => {
-        console.log('Entry info saved to DB:', result);
-      })
-      .catch((error) => {
-        console.error('Error saving entry info to DB:', error);
-      });
-  }
-}
 
 // 프로그램 종료 시 MySQL 연결 종료
 process.on("SIGINT", async () => {
@@ -338,4 +341,4 @@ process.on("SIGINT", async () => {
   process.exit();
 });
 
-export { router, attachSocketEvents, entryRooms };
+export { router, attachSocketEvents };
