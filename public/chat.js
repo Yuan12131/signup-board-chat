@@ -2,6 +2,7 @@ const socket = io('http://localhost:8000', { path: '/socket.io' });
 
 const chatRoom = document.getElementById('roomList');
 const title = document.getElementById("title");
+const chatInput = document.getElementById("chatInput");
 
 socket.on('roomList', (rooms) => {
   // 받은 방 목록을 활용하여 UI에 표시
@@ -19,6 +20,16 @@ socket.on('roomList', (rooms) => {
     chatRoom.appendChild(roomItem);
   });
 });
+
+function sendMessage() {
+  const message = chatInput.value;
+
+  // 전송한 메시지를 서버로 전송
+  socket.emit('sendMessage', message);
+
+  // 메시지 입력 필드 초기화
+  chatInput.value = '';
+}
 
 socket.on('disconnect', () => {
   console.log('Disconnected from the server');
