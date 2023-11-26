@@ -21,7 +21,6 @@ const boardJsonFile = new URL("../data/board.json", import.meta.url).pathname;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 // 예시: 이미지가 저장된 디렉토리를 정적 파일로 제공하는 설정
@@ -260,7 +259,7 @@ router.get("/get-posts", async (req, res) => {
 
 async function insertRoomsRecord(record) {
   try {
-    const { roomId, userId, isHost, } = record;
+    const { roomId, userId, isHost } = record;
 
     const timestamp = new Date()
       .toISOString()
@@ -277,6 +276,29 @@ async function insertRoomsRecord(record) {
     return result;
   } catch (err) {
     console.error("rooms 테이블에 데이터를 삽입하는 중 오류 발생:", err);
+    throw err;
+  }
+}
+
+async function insertMessagesRecord(record) {
+  try {
+    const { roomId, userId, isHost, message } = record;
+
+    const timestamp = new Date()
+      .toISOString()
+      .replace("T", " ")
+      .replace("Z", "");
+
+    const insertQuery = `
+  INSERT INTO messages (roomId, userId, isHost, message, timestamp)
+  VALUES (?, ?, ?, ?, ?);
+`;
+
+    const values = [roomId, userId, isHost, message, timestamp];
+    const [result] = await pool.query(insertQuery, values);
+    return result;
+  } catch (err) {
+    console.error("messages 테이블에 데이터를 삽입하는 중 오류 발생:", err);
     throw err;
   }
 }
@@ -332,8 +354,48 @@ const attachSocketEvents = (io) => {
         socket.emit("joinRoomError", { message: "User authentication failed" });
       }
     });
-  });
-};
+
+   // 클라이언트로부터 메시지를 받아와 DB에 저장
+socket.on("sendMessage", async (data) => {
+  const { message, roomId } = data;
+
+  // 로그인 중인 사용자의 ID를 가져오는 예시
+  const userId = socket.request.session.user.id;
+
+  try {
+    // 여기에서 DB 조회를 통해 방의 정보를 확인하고, 호스트 여부를 판단하여 결과를 반환
+    const roomInfo = rooms.find((room) => room.roomId === roomId);
+
+    if (roomInfo) {
+      // 호스트 여부에 따라 isHost 값 설정
+      const isHost = roomInfo.hostId === userId;
+
+      // DB에 메시지 저장
+      await insertMessagesRecord({
+        roomId: roomId,
+        userId: userId,
+        isHost: isHost,
+        message: message,
+        timestamp: new Date().toISOString(),
+      });
+
+      // DB에서 이전 메시지를 불러와 클라이언트로 전송
+      const messages = await loadMessages(roomId);
+      socket.emit("loadMessages", messages);
+    } else {
+      // 방이 존재하지 않는 경우 등에 대한 처리
+      // 클라이언트에 에러 메시지 등을 전송
+      socket.emit("messageError", { message: "Invalid message or user" });
+    }
+  } catch (error) {
+    console.error("Error during user authentication:", error);
+    socket.emit("messageError", { message: "User authentication failed" });
+  }
+})
+
+})
+}
+  
 
 // 프로그램 종료 시 MySQL 연결 종료
 process.on("SIGINT", async () => {
@@ -341,4 +403,4 @@ process.on("SIGINT", async () => {
   process.exit();
 });
 
-export { router, attachSocketEvents };
+export { router, attachSocketEvents  };
