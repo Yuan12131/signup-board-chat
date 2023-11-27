@@ -35,7 +35,7 @@ function formatTimestamp(timestamp) {
 
 function displayMessage(message, side) {
   const formattedTimestamp = new Date(message.timestamp).toLocaleString();
-  
+
   const messageContainer = document.createElement("div");
   messageContainer.classList.add("message-container", side);
   messagesDiv.appendChild(messageContainer);
@@ -85,7 +85,7 @@ chatBtn.addEventListener("click", function (e) {
 
 chatInput.addEventListener("keydown", function (e) {
   // event.key가 'Enter'인 경우
-  if (e.key === 'Enter') {
+  if (e.key === "Enter") {
     e.preventDefault();
     const message = chatInput.value;
     sendMessage(message);
@@ -95,13 +95,23 @@ chatInput.addEventListener("keydown", function (e) {
 
 // 서버에서 메시지를 전달받아 화면에 출력
 socket.on("newMessage", (message) => {
-    // 왼쪽과 오른쪽으로 나누어 출력
-      if (message.isHost) {
-        displayMessage(message, "left"); // 호스트는 왼쪽에 출력
-      } else {
-        displayMessage(message, "right"); // 호스트가 아닌 경우 오른쪽에 출력
-      }
-    });
+  // 왼쪽과 오른쪽으로 나누어 출력
+  if (message.isHost) {
+    displayMessage(message, "left"); // 호스트는 왼쪽에 출력
+  } else {
+    displayMessage(message, "right"); // 호스트가 아닌 경우 오른쪽에 출력
+  }
+});
+
+// 소켓에 연결되면 userId 이벤트를 발생시켜 사용자 ID를 요청
+socket.on('connect', () => {
+  socket.emit('userIdRequest');
+});
+
+// 서버로부터 받은 사용자 ID를 출력
+socket.on('userId', (user) => {
+  userProfile.textContent = `USER ID : ${user.userId} 🫶 `;
+});
 
 socket.on("roomList", (rooms) => {
   // 받은 방 목록을 활용하여 UI에 표시
@@ -109,7 +119,7 @@ socket.on("roomList", (rooms) => {
 
   rooms.forEach((room) => {
     const roomItem = document.createElement("li");
-    roomItem.textContent = `Room : ${room.roomId} (Host: ${room.hostId})`;
+    roomItem.textContent = `${room.roomId} (Host: ${room.hostId})`;
     chatRoom.appendChild(roomItem);
 
     // 클릭 이벤트 핸들러 추가
@@ -142,11 +152,6 @@ socket.on("loadMessages", (messages) => {
       displayMessage(message, "right"); // 호스트가 아닌 경우 오른쪽에 출력
     }
   });
-});
-
-socket.on("userId", (user) => {
-  console.log("Received user ID:", user); // 디버깅 로그
-  userProfile.textContent = `USER : ${user}`;
 });
 
 socket.on("disconnect", () => {
