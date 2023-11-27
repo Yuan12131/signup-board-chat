@@ -73,6 +73,7 @@
   transition: all 0.35s;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 #roomList {
@@ -83,10 +84,9 @@
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   flex-wrap: nowrap;
   overflow: auto;
-  margin-top: 20px;
 }
 
 #home {
@@ -100,6 +100,8 @@
   text-align: center;
   border: 1px solid rgb(88, 6, 88);
   color: aliceblue;
+  margin: 30px;
+  cursor: pointer;
 }
 
 
@@ -117,7 +119,6 @@
   display: block;
   cursor: pointer;
 }
-
 
 #user {
   width: 20vw;
