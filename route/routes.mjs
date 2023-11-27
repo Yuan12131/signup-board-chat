@@ -331,21 +331,21 @@ const attachSocketEvents = (io) => {
   io.on("connection", (socket) => {
     // 초기 방 목록을 클라이언트에게 보내줌
     socket.emit("roomList", rooms);
-    
+  
     // 방 입장 처리
     socket.on("joinRoom", async (data) => {
       const { roomId } = data;
       const userId = socket.request.session.user.id;
-
+  
       // 세션에서 사용자 ID 가져오기
       try {
         // 여기에서 DB 조회를 통해 방의 정보를 확인하고, 호스트 여부를 판단하여 결과를 반환
         const roomInfo = rooms.find((room) => room.roomId === roomId);
-
+  
         if (roomInfo) {
           // 호스트 여부에 따라 isHost 값 설정
           const isHost = roomInfo.hostId === userId;
-
+  
           // DB에 입장 정보 저장
           insertRoomsRecord({
             roomId: roomId,
@@ -353,6 +353,7 @@ const attachSocketEvents = (io) => {
             isHost: isHost,
             timestamp: new Date().toISOString(),
           });
+  
         } else {
           // 방이 존재하지 않는 경우 등에 대한 처리
           // 클라이언트에 에러 메시지 등을 전송
@@ -363,17 +364,17 @@ const attachSocketEvents = (io) => {
         socket.emit("joinRoomError", { message: "User authentication failed" });
       }
     });
-
+  
     socket.on("sendMessage", async (data) => {
       const { message, roomId } = data;
       const userId = socket.request.session.user.id;
-
+  
       try {
         const roomInfo = rooms.find((room) => room.roomId === roomId);
-
+  
         if (roomInfo) {
           const isHost = roomInfo.hostId === userId;
-
+  
           // DB에 메시지 저장
           await insertMessagesRecord({
             roomId: roomId,
@@ -382,7 +383,7 @@ const attachSocketEvents = (io) => {
             message: message,
             timestamp: new Date().toISOString(),
           });
-
+  
           // 방에 속한 사용자들에게 메시지 전송
           io.to(roomId).emit("newMessage", {
             userId,
@@ -399,24 +400,20 @@ const attachSocketEvents = (io) => {
         socket.emit("messageError", { message: "User authentication failed" });
       }
     });
-
-    socket.on("loadMessages", async (data) => {
+  
+    socket.on("joinRoom", async (data) => {
       const { roomId } = data;
-
-      // DB에서 해당 방의 메시지를 불러옴
+      socket.join(roomId);
+    
+      // DB에서 해당 방의 이전 메시지를 불러옴
       const messages = await loadMessages(roomId);
-
+    
       // 클라이언트에 메시지 전송
       socket.emit("loadMessages", messages);
     });
-
-    // 클라이언트가 방에 입장하면 해당 방에 속한 사용자들에게 메시지 전송
-    socket.on("joinRoom", (data) => {
-      const { roomId } = data;
-      socket.join(roomId);
-    });
   });
-};
+}
+  
 
 // 프로그램 종료 시 MySQL 연결 종료
 process.on("SIGINT", async () => {
@@ -424,4 +421,4 @@ process.on("SIGINT", async () => {
   process.exit();
 });
 
-export { router, attachSocketEvents };
+export { router, attachSocketEvents }
