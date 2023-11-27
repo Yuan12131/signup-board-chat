@@ -332,12 +332,17 @@ const attachSocketEvents = (io) => {
     // 초기 방 목록을 클라이언트에게 보내줌
     socket.emit("roomList", rooms);
   
+    // 클라이언트가 userIdRequest 이벤트를 발생시키면 사용자 ID를 전송
+    socket.on('userIdRequest', () => {
+      const userId = socket.request.session.user.id;
+      socket.emit('userId', { userId });
+    });
+
     // 방 입장 처리
     socket.on("joinRoom", async (data) => {
       const { roomId } = data;
       const userId = socket.request.session.user.id;
   
-      // 세션에서 사용자 ID 가져오기
       try {
         // 여기에서 DB 조회를 통해 방의 정보를 확인하고, 호스트 여부를 판단하여 결과를 반환
         const roomInfo = rooms.find((room) => room.roomId === roomId);
