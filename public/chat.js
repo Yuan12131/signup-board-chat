@@ -35,13 +35,37 @@ function formatTimestamp(timestamp) {
 
 function displayMessage(message, side) {
   const formattedTimestamp = new Date(message.timestamp).toLocaleString();
-  console.log(message);
+  
+  const messageContainer = document.createElement("div");
+  messageContainer.classList.add("message-container", side);
+  messagesDiv.appendChild(messageContainer);
 
-  messagesDiv.innerHTML += `<div class="message ${side}">
-      <span>${message.userId}:</span>
-      <span>${formattedTimestamp}:</span>
-      <p>${message.message}</p>
-  </div>`;
+  const profilePic = document.createElement("div");
+  profilePic.classList.add("profilePic");
+  profilePic.appendChild(document.createTextNode("👤"));
+  messageContainer.appendChild(profilePic);
+
+  const userMessageContainer = document.createElement("div");
+  userMessageContainer.classList.add("userMessageContainer");
+
+  const userId = document.createElement("div");
+  userId.classList.add("userId");
+  userId.textContent = message.userId;
+
+  const messageText = document.createElement("p");
+  messageText.classList.add("messageText");
+  messageText.textContent = message.message;
+
+  const timestampDiv = document.createElement("div");
+  timestampDiv.classList.add("timestamp", side);
+  timestampDiv.textContent = formattedTimestamp;
+
+  messageContainer.appendChild(userMessageContainer);
+  userMessageContainer.appendChild(userId);
+  userMessageContainer.appendChild(messageText);
+  messageText.appendChild(timestampDiv);
+
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
 function sendMessage(message) {
@@ -52,21 +76,32 @@ function sendMessage(message) {
   }
 }
 
-// 메시지 입력 후 전송 버튼을 눌렀을 때의 이벤트 처리
-chatBtn.addEventListener("click", function () {
+chatBtn.addEventListener("click", function (e) {
+  e.preventDefault();
   const message = chatInput.value;
-
-  // 서버에 메시지 전송
   sendMessage(message);
-
-  // 메시지 입력 필드 초기화
   chatInput.value = "";
+});
+
+chatInput.addEventListener("keydown", function (e) {
+  // event.key가 'Enter'인 경우
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const message = chatInput.value;
+    sendMessage(message);
+    chatInput.value = "";
+  }
 });
 
 // 서버에서 메시지를 전달받아 화면에 출력
 socket.on("newMessage", (message) => {
-  displayMessage(message);
-});
+    // 왼쪽과 오른쪽으로 나누어 출력
+      if (message.isHost) {
+        displayMessage(message, "left"); // 호스트는 왼쪽에 출력
+      } else {
+        displayMessage(message, "right"); // 호스트가 아닌 경우 오른쪽에 출력
+      }
+    });
 
 socket.on("roomList", (rooms) => {
   // 받은 방 목록을 활용하여 UI에 표시
@@ -87,24 +122,24 @@ socket.on("roomList", (rooms) => {
 });
 
 // 방에 입장할 때 이전 메시지를 요청
-socket.on('joinRoom', (data) => {
+socket.on("joinRoom", (data) => {
   const { roomId } = data;
 
   // 이전 메시지를 요청
-  socket.emit('loadMessages', { roomId });
+  socket.emit("loadMessages", { roomId });
 });
 
 // 서버로부터 받아온 메시지를 화면에 출력
-socket.on('loadMessages', (messages) => {
+socket.on("loadMessages", (messages) => {
   // 화면 초기화
-  messagesDiv.innerHTML = '';
+  messagesDiv.innerHTML = "";
 
   // 왼쪽과 오른쪽으로 나누어 출력
-  messages.forEach(message => {
+  messages.forEach((message) => {
     if (message.isHost) {
-      displayMessage(message, 'left'); // 호스트는 왼쪽에 출력
+      displayMessage(message, "left"); // 호스트는 왼쪽에 출력
     } else {
-      displayMessage(message, 'right'); // 호스트가 아닌 경우 오른쪽에 출력
+      displayMessage(message, "right"); // 호스트가 아닌 경우 오른쪽에 출력
     }
   });
 });
