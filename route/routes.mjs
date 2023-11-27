@@ -303,6 +303,23 @@ async function insertMessagesRecord(record) {
   }
 }
 
+async function loadMessages(roomId) {
+  try {
+    const messages = await getMessagesByRoomId(roomId);
+    return messages;
+  } catch (error) {
+    console.error("Error loading messages:", error);
+    throw error;
+  }
+}
+
+async function getMessagesByRoomId(roomId) {
+  const selectQuery =
+    "SELECT * FROM messages WHERE roomId = ? ORDER BY timestamp;";
+  const [messages] = await pool.query(selectQuery, [roomId]);
+  return messages;
+}
+
 const attachSocketEvents = (io) => {
   // 방 목록
   const rooms = [
@@ -312,23 +329,15 @@ const attachSocketEvents = (io) => {
   ];
 
   io.on("connection", (socket) => {
-    console.log("A user connected");
-
-    // 클라이언트로 방 목록 전송
+    // 초기 방 목록을 클라이언트에게 보내줌
     socket.emit("roomList", rooms);
-
-    // 연결이 끊어졌을 때 처리
-    socket.on("disconnect", () => {
-      console.log("A user disconnected");
-    });
-
+    
     // 방 입장 처리
     socket.on("joinRoom", async (data) => {
       const { roomId } = data;
-
-      // 세션에서 사용자 ID 가져오기
       const userId = socket.request.session.user.id;
 
+      // 세션에서 사용자 ID 가져오기
       try {
         // 여기에서 DB 조회를 통해 방의 정보를 확인하고, 호스트 여부를 판단하여 결과를 반환
         const roomInfo = rooms.find((room) => room.roomId === roomId);
@@ -355,47 +364,59 @@ const attachSocketEvents = (io) => {
       }
     });
 
-   // 클라이언트로부터 메시지를 받아와 DB에 저장
-socket.on("sendMessage", async (data) => {
-  const { message, roomId } = data;
+    socket.on("sendMessage", async (data) => {
+      const { message, roomId } = data;
+      const userId = socket.request.session.user.id;
 
-  // 로그인 중인 사용자의 ID를 가져오는 예시
-  const userId = socket.request.session.user.id;
+      try {
+        const roomInfo = rooms.find((room) => room.roomId === roomId);
 
-  try {
-    // 여기에서 DB 조회를 통해 방의 정보를 확인하고, 호스트 여부를 판단하여 결과를 반환
-    const roomInfo = rooms.find((room) => room.roomId === roomId);
+        if (roomInfo) {
+          const isHost = roomInfo.hostId === userId;
 
-    if (roomInfo) {
-      // 호스트 여부에 따라 isHost 값 설정
-      const isHost = roomInfo.hostId === userId;
+          // DB에 메시지 저장
+          await insertMessagesRecord({
+            roomId: roomId,
+            userId: userId,
+            isHost: isHost,
+            message: message,
+            timestamp: new Date().toISOString(),
+          });
 
-      // DB에 메시지 저장
-      await insertMessagesRecord({
-        roomId: roomId,
-        userId: userId,
-        isHost: isHost,
-        message: message,
-        timestamp: new Date().toISOString(),
-      });
+          // 방에 속한 사용자들에게 메시지 전송
+          io.to(roomId).emit("newMessage", {
+            userId,
+            isHost,
+            message,
+            timestamp: new Date().toISOString(),
+          });
+        } else {
+          // 방이 존재하지 않는 경우 등에 대한 처리
+          socket.emit("messageError", { message: "Invalid message or user" });
+        }
+      } catch (error) {
+        console.error("Error during user authentication:", error);
+        socket.emit("messageError", { message: "User authentication failed" });
+      }
+    });
 
-      // DB에서 이전 메시지를 불러와 클라이언트로 전송
+    socket.on("loadMessages", async (data) => {
+      const { roomId } = data;
+
+      // DB에서 해당 방의 메시지를 불러옴
       const messages = await loadMessages(roomId);
-      socket.emit("loadMessages", messages);
-    } else {
-      // 방이 존재하지 않는 경우 등에 대한 처리
-      // 클라이언트에 에러 메시지 등을 전송
-      socket.emit("messageError", { message: "Invalid message or user" });
-    }
-  } catch (error) {
-    console.error("Error during user authentication:", error);
-    socket.emit("messageError", { message: "User authentication failed" });
-  }
-})
 
-})
-}
-  
+      // 클라이언트에 메시지 전송
+      socket.emit("loadMessages", messages);
+    });
+
+    // 클라이언트가 방에 입장하면 해당 방에 속한 사용자들에게 메시지 전송
+    socket.on("joinRoom", (data) => {
+      const { roomId } = data;
+      socket.join(roomId);
+    });
+  });
+};
 
 // 프로그램 종료 시 MySQL 연결 종료
 process.on("SIGINT", async () => {
@@ -403,4 +424,4 @@ process.on("SIGINT", async () => {
   process.exit();
 });
 
-export { router, attachSocketEvents  };
+export { router, attachSocketEvents };
