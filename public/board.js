@@ -9,6 +9,24 @@ const overlay = document.getElementById("overlay");
 const itemRows = document.querySelectorAll(".item-row"); //각각의 글 제목 클릭 시 해당 글의 내용을 모달에 출력
 const boardForm = document.getElementById("boardForm");
 
+// 페이징 상수
+const postsPerPage = 10; // 페이지당 글 수
+
+// 페이지 및 글 목록 로드
+let currentPage = 1;
+
+document.getElementById("prevPage").addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage--;
+    loadPosts();
+  }
+});
+
+document.getElementById("nextPage").addEventListener("click", () => {
+  currentPage++;
+  loadPosts();
+});
+
 openWriteModal.addEventListener("click", () => {
   writeModal.style.display = "block";
   overlay.style.display = "block";
@@ -58,21 +76,34 @@ boardForm.addEventListener("submit", async function (event) {
 
 // 글 목록 로드
 async function loadPosts() {
+  const startIdx = (currentPage - 1) * postsPerPage;
+  const endIdx = startIdx + postsPerPage;
+
+  console.log("startIdx:", startIdx);
+  console.log("endIdx:", endIdx);
+
   const response = await fetch("/get-posts");
   if (response.ok) {
     const posts = await response.json();
     displayPosts(posts);
+    document.getElementById("currentPage").textContent = currentPage;
   } else {
     console.error("글 목록 로드 실패:", response.statusText);
   }
 }
 
-// 글 목록 표시
+// 글 목록 표시 함수 업데이트
 function displayPosts(posts) {
   const tableBody = document.querySelector("#postTable tbody");
+
+  // 기존 행 초기화
   tableBody.innerHTML = "";
 
-  posts.forEach((post) => {
+  const startIdx = (currentPage - 1) * postsPerPage;
+  const endIdx = startIdx + postsPerPage;
+
+  // 적절한 범위 내의 글만 행을 추가
+  posts.slice(startIdx, endIdx).forEach((post) => {
     const row = tableBody.insertRow();
 
     // post.timestamp를 새로운 형식으로 변환
@@ -97,8 +128,14 @@ function displayPosts(posts) {
       : post.title;
     row.appendChild(titleCell);
 
-    row.innerHTML += `<td>${post.userId}</td><td>${formattedTimestamp}</td>`;
+    // 다른 셀에 데이터 추가
+    const userIdCell = row.insertCell();
+    userIdCell.textContent = post.userId;
 
+    const timestampCell = row.insertCell();
+    timestampCell.textContent = formattedTimestamp;
+
+    // 행에 클릭 이벤트 추가
     row.addEventListener("click", () => displayPostContent(post));
   });
 }
