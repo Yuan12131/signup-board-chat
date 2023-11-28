@@ -121,7 +121,7 @@ idCheckBtn.addEventListener("click", async function () {
   } catch (error) {
     // 오류 발생 시
     console.error("에러:", error);
-s  }
+  }
 });
 
 // 회원가입 폼 데이터 처리 로직
