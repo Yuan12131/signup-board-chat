@@ -1,88 +1,66 @@
-import { pool } from "./config.mjs";
+import { pool } from "../database/config.mjs";
 
-// MySQL 연결 풀 생성
-const tableName = "chat";
-
-// 서버 측 JavaScript 코드
-socket.on('chat message', async function (data) {
-  const messagesFilePath = path.join(__dirname, 'messages.json');
-
+async function insertRoomsRecord(record) {
   try {
-    // 기존 메시지 데이터 읽기
-    const existingMessages = await readMessagesFromFile(messagesFilePath);
+    const { roomId, userId, isHost } = record;
 
-    // 새 메시지 추가
-    existingMessages.push(data);
-
-    // 메시지 데이터를 JSON 파일에 저장
-    await fs.writeFile(messagesFilePath, JSON.stringify(existingMessages, null, 2));
-
-    // 데이터베이스에도 저장
-    await saveMessageToDatabase(data);
-  } catch (error) {
-    console.error('Error saving message to JSON file and database:', error.message);
-  }
-});
-
-// JSON 파일에서 메시지 데이터 읽기
-async function readMessagesFromFile(filePath) {
-  try {
-    const content = await fs.readFile(filePath, 'utf-8');
-    return JSON.parse(content);
-  } catch (error) {
-    // 파일이 없거나 오류가 발생하면 빈 배열 반환
-    return [];
-  }
-}
-
-// 데이터베이스에 메시지 저장
-async function saveMessageToDatabase(data) {
-  try {
-    const { userId, message } = data;
-    const query = 'INSERT INTO messages (user_id, message) VALUES ($1, $2)';
-    const values = [userId, message];
-    await pool.query(query, values);
-  } catch (error) {
-    console.error('Error saving message to database:', error.message);
-  }
-}
-
-/**
- * 사용자 레코드를 users 테이블에 삽입하는 함수
- * @param {object} record - 사용자 레코드 객체
- * @returns {Promise<object>} - 삽입 결과
- */
-async function insertChatRecord(record) {
-  try {
-    const { message, userId, timestamp, imagePath } = record;
+    const timestamp = new Date()
+      .toISOString()
+      .replace("T", " ")
+      .replace("Z", "");
 
     const insertQuery = `
-      INSERT INTO ${tableName} (userId, title, content, timestamp, imagePath)
-      VALUES (?, ?, ?, ?, ?);
-    `;
+  INSERT INTO rooms (roomId, userId, isHost, timestamp)
+  VALUES (?, ?, ?, ?);
+`;
 
-    const values = [userId, title, content, timestamp, imagePath];
+    const values = [roomId, userId, isHost, timestamp];
     const [result] = await pool.query(insertQuery, values);
     return result;
   } catch (err) {
-    console.error("board 테이블에 데이터를 삽입하는 중 오류 발생:", err);
+    console.error("rooms 테이블에 데이터를 삽입하는 중 오류 발생:", err);
     throw err;
   }
 }
 
-/**
- * 여러 레코드를 users 테이블에 삽입하는 함수
- * @param {Array<object>} records - 사용자 레코드 객체들의 배열
- * @returns {Promise<void>} - 모든 레코드가 삽입되면 해결되는 Promise
- */
-async function insertChatRecords(records) {
-  for (const record of records) {
-    try {
-      await insertChatRecord(record);
-    } catch (error) {
-      console.error("Board 레코드 삽입 중 오류 발생:", error);
-    }
+async function insertMessagesRecord(record) {
+  try {
+    const { roomId, userId, isHost, message } = record;
+
+    const timestamp = new Date()
+      .toISOString()
+      .replace("T", " ")
+      .replace("Z", "");
+
+    const insertQuery = `
+  INSERT INTO messages (roomId, userId, isHost, message, timestamp)
+  VALUES (?, ?, ?, ?, ?);
+`;
+
+    const values = [roomId, userId, isHost, message, timestamp];
+    const [result] = await pool.query(insertQuery, values);
+    return result;
+  } catch (err) {
+    console.error("messages 테이블에 데이터를 삽입하는 중 오류 발생:", err);
+    throw err;
   }
 }
 
-export { insertChatRecords };
+async function loadMessages(roomId) {
+  try {
+    const messages = await getMessagesByRoomId(roomId);
+    return messages;
+  } catch (error) {
+    console.error("Error loading messages:", error);
+    throw error;
+  }
+}
+
+async function getMessagesByRoomId(roomId) {
+  const selectQuery =
+    "SELECT * FROM messages WHERE roomId = ? ORDER BY timestamp;";
+  const [messages] = await pool.query(selectQuery, [roomId]);
+  return messages;
+}
+
+export { insertRoomsRecord, insertMessagesRecord, loadMessages }
