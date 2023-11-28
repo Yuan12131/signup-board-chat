@@ -1,13 +1,18 @@
 import express from "express";
-import { createServer } from 'http';  // http 모듈 추가
-import { router, attachSocketEvents } from "./route/routes.mjs";
-import { Server } from 'socket.io';
+import cors from "cors";
 import session from "express-session";
-import cors from 'cors';
+import { createServer } from "http";
+import { Server } from "socket.io";
+import { router, attachSocketEvents } from "./route/routes.mjs";
 
 const app = express();
-const server = createServer(app);  // createServer 함수 사용
-const io = new Server(server, { path: '/socket.io' });
+
+// Socket.io는 HTTP 서버를 사용하여 웹소켓 연결을 설정 (HTTP 서버 위에서 작동)
+// createServer(app)를 사용하여 만든 HTTP 서버 객체를 이용해 소켓 연결을 활성화
+const server = createServer(app);
+// Socket.io의 Server 클래스를 사용하여 웹소켓 서버를 생성
+// ! io 객체는 웹소켓 연결을 관리하고, 클라이언트와 서버 간의 양방향 통신을 담당
+const io = new Server(server, { path: "/socket.io" });
 const PORT = 8000;
 
 const sessionMiddleware = session({
@@ -18,26 +23,28 @@ const sessionMiddleware = session({
 });
 
 app.use(sessionMiddleware);
+app.use(cors());
 
 // 정적 파일 미들웨어 등록
 app.use(express.static("public"));
 
-app.use(cors());
-
 // 라우트 등록
 app.use("/", router);
 
-// Socket.io 이벤트 리스너 추가
-attachSocketEvents(io); // attachSocketEvents 함수에 io를 전달하도록 수정
+// Socket.io 이벤트 리스너 -> attachSocketEvents 함수에 io를 전달
+attachSocketEvents(io);
 
+// express에서는 req, res 객체에 세션을 저장하고, 관리
+// 소켓 연결(socket connection)에 대한 세션 정보를 처리해야 함
 io.use((socket, next) => {
+  // 요청 객체, 응답 객체 (기본값)
   sessionMiddleware(socket.request, socket.request.res || {}, next);
 });
 
 server.listen(PORT, (err) => {
   if (err) {
-    console.error('Server failed to start:', err);
+    console.error("Server err : ", err);
   } else {
-    console.log(`Server is running on port: http://localhost:${PORT}`);
+    console.log(`Server running : http://localhost:${PORT}`);
   }
 });
