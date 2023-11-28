@@ -82,6 +82,7 @@ async function loadPosts() {
   console.log("startIdx:", startIdx);
   console.log("endIdx:", endIdx);
 
+  // /get-posts 경로로 HTTP GET 요청을 보내고, 해당 요청에 대한 응답을 기다리기 위해 await 키워드를 사용
   const response = await fetch("/get-posts");
   if (response.ok) {
     const posts = await response.json();
