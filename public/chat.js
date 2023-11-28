@@ -1,5 +1,4 @@
 const socket = io("http://localhost:8000", { path: "/socket.io" });
-
 const chatBtn = document.getElementById("chatBtn");
 const chatRoom = document.getElementById("roomList");
 const title = document.getElementById("title");
@@ -9,11 +8,12 @@ const userProfile = document.getElementById("user");
 
 function getCurrentRoomId() {
   const titleText = title.textContent;
+  // 텍스트에서 "Room : "이라는 문자열이 처음으로 등장하는 인덱스를 찾아, 만약 해당 문자열이 없으면 -1이 반환
   const roomIdIndex = titleText.indexOf("Room : ");
 
   if (roomIdIndex !== -1) {
     const roomId = titleText.substring(roomIdIndex + "Room : ".length);
-    return roomId.trim();
+    return roomId.trim(); // 추출한 ID의 앞뒤 공백을 제거하고 정리된 방 ID를 반환
   }
 
   return null;
@@ -76,13 +76,6 @@ function sendMessage(message) {
   }
 }
 
-chatBtn.addEventListener("click", function (e) {
-  e.preventDefault();
-  const message = chatInput.value;
-  sendMessage(message);
-  chatInput.value = "";
-});
-
 chatInput.addEventListener("keydown", function (e) {
   // event.key가 'Enter'인 경우
   if (e.key === "Enter") {
@@ -93,24 +86,21 @@ chatInput.addEventListener("keydown", function (e) {
   }
 });
 
-// 서버에서 메시지를 전달받아 화면에 출력
-socket.on("newMessage", (message) => {
-  // 왼쪽과 오른쪽으로 나누어 출력
-  if (message.isHost) {
-    displayMessage(message, "left"); // 호스트는 왼쪽에 출력
-  } else {
-    displayMessage(message, "right"); // 호스트가 아닌 경우 오른쪽에 출력
-  }
+chatBtn.addEventListener("click", function (e) {
+  e.preventDefault();
+  const message = chatInput.value;
+  sendMessage(message);
+  chatInput.value = "";
 });
 
 // 소켓에 연결되면 userId 이벤트를 발생시켜 사용자 ID를 요청
-socket.on('connect', () => {
-  socket.emit('userIdRequest');
+socket.on("connect", () => {
+  socket.emit("userIdRequest");
 });
 
 // 서버로부터 받은 사용자 ID를 출력
-socket.on('userId', (user) => {
-  userProfile.textContent = `USER ID : ${user.userId} 🫶 `;
+socket.on("userId", (user) => {
+  userProfile.textContent = `🫶 ${user.userId.id} 🫶`;
 });
 
 socket.on("roomList", (rooms) => {
@@ -131,7 +121,7 @@ socket.on("roomList", (rooms) => {
   });
 });
 
-// 방에 입장할 때 이전 메시지를 요청
+// 방에 입장할 때 서버에 이전 메세지를 전달받음
 socket.on("joinRoom", (data) => {
   const { roomId } = data;
 
@@ -152,6 +142,16 @@ socket.on("loadMessages", (messages) => {
       displayMessage(message, "right"); // 호스트가 아닌 경우 오른쪽에 출력
     }
   });
+});
+
+// 서버에서 메시지를 전달받아 화면에 출력
+socket.on("newMessage", (message) => {
+  // 왼쪽과 오른쪽으로 나누어 출력
+  if (message.isHost) {
+    displayMessage(message, "left"); // 호스트는 왼쪽에 출력
+  } else {
+    displayMessage(message, "right"); // 호스트가 아닌 경우 오른쪽에 출력
+  }
 });
 
 socket.on("disconnect", () => {
