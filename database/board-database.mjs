@@ -1,6 +1,5 @@
 import { pool } from "./config.mjs";
 
-// MySQL 연결 풀 생성
 const tableName = "board";
 
 /**
