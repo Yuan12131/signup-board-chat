@@ -8,7 +8,6 @@
 #root{
   width: 100vw;
   height: 100vh;
-  background-color: azure;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -91,6 +90,8 @@ button{
   position: fixed;
   top: 15vh;
   right:15vw;
+  width: 80px;
+  height: 40px;
 }
 
 #closeWriteModal{
@@ -167,7 +168,6 @@ button{
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
   overflow-y: auto;
 }
 
@@ -176,4 +176,10 @@ button{
   height: auto;
   margin-top: 50px;
   cursor: default;
+}
+
+#prevPage, #nextPage{
+  width: 60px;
+  height: 30px;
+  background-color: black;
 }
