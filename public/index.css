@@ -7,7 +7,7 @@
 #root {
   width: 100vw;
   height: 100vh;
-  background-color: azure;
+  background-color: black;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,75 +15,95 @@
 
 #root > div:nth-child(1) {
   width: 40vw;
-  height: 20vh;
-  background-color: antiquewhite;
+  height: 15vh;
+  color: antiquewhite;
+  font-size: 2rem;
   text-align: center;
   line-height: 20vh;
 }
 
 #loginForm {
-  width: 40vw;
-  height: 40vh;
-  background-color: bisque;
+  width: 350px;
+  height: 200px;
   display: flex;
   flex-direction: column;
-  padding: 50px;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid antiquewhite;
+  padding: 10px;
 }
 
 input {
-  width: 30vw;
-  height: 5vh;
-  margin: 1vw;
+  width: 180px;
+  height: 30px;
+  position: relative;
+  margin: 10px;  
+  right: 60px;
 }
 
 button {
-  width: 10vw;
-  height: 5vh;
-  margin: 10px;
-  background-color:rgb(175, 131, 215);
+  width: 100px;
+  height: 30px;
+  background-color: antiquewhite;
   border: 0;
-  color: white;
+  color: black;
   cursor: pointer;
 }
 
 .container {
-  width: 40vw;
-  height: 30vh;
+  width: 800px;
+  height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  bottom: 0px;
 }
 
 .board, .chat {
-  width: 15vw;
-  height: 15vh;
+  width: 50%;
+  height: 100%;
   border-radius: 20%;
-  background-color:rgb(184, 210, 232);
+  color: antiquewhite;
+  font-weight: 700;
   margin: 20px;
   text-align: center;
   line-height: 15vh;
-  font-size: 2rem;
+  font-size: 1rem;
   cursor: pointer;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.chat{
+  background-image: url("https://cdn-icons-png.flaticon.com/512/5909/5909092.png" );
+}
+
+.board{
+  background-image: url("https://cdn-icons-png.flaticon.com/512/6539/6539066.png");
 }
 
 #loginBtn{
   position: relative;
-  left: 20px;
-  top:20px;
+  left: 100px;
+  bottom: 90px;
+  width: 100px;
+  height: 30px;
 }
 
 #idCheckBtn{
   width: 70px;
   height: 30px;
   position: absolute;
-  top: 110px;
-  right: 15px;
+  top: 100px;
 }
 
 #signupBtn{
   position: relative;
-  bottom: 16vh;
-  left: 10vw;
+  bottom: 105px;
+  left: 100px;
 }
 
 #indexOverlay {
@@ -108,5 +128,5 @@ button {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   z-index: 1;
   text-align: center;
-  width: 560px;
+  width: 35%;
 }
