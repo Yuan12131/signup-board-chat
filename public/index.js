@@ -35,7 +35,7 @@ loginBtn.addEventListener("click", async function () {
     if (response.ok) {
       // 로그인 성공 시
       console.log("Login successful");
-      h3.innerText = userId + "님 반갑습니다!";
+      h3.innerText =  "WELCOME  👤 " + userId;
       loggedInUserId.style.display = "block";
       loginForm.style.display = "none";
       logoutBtn.style.display = "block";
