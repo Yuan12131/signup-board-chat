@@ -16,7 +16,7 @@
 #root > div:nth-child(1) {
   width: 40vw;
   height: 15vh;
-  color: antiquewhite;
+  color: #865DFF;
   font-size: 2rem;
   text-align: center;
   line-height: 20vh;
@@ -24,14 +24,14 @@
 
 #loginForm {
   width: 350px;
-  height: 200px;
+  height: 180px;
   display: flex;
   flex-direction: column;
   padding: 10px;
   justify-content: center;
   align-items: center;
-  border: 1px solid antiquewhite;
-  padding: 10px;
+  border: 1px solid #865DFF;
+  padding-top: 30px;
 }
 
 input {
@@ -45,7 +45,7 @@ input {
 button {
   width: 100px;
   height: 30px;
-  background-color: antiquewhite;
+  background-color: #E384FF;
   border: 0;
   color: black;
   cursor: pointer;
@@ -102,7 +102,7 @@ button {
 
 #signupBtn{
   position: relative;
-  bottom: 105px;
+  bottom: 85px;
   left: 100px;
 }
 
