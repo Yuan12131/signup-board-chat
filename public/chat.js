@@ -9,10 +9,10 @@ const userProfile = document.getElementById("user");
 function getCurrentRoomId() {
   const titleText = title.textContent;
   // 텍스트에서 "Room : "이라는 문자열이 처음으로 등장하는 인덱스를 찾아, 만약 해당 문자열이 없으면 -1이 반환
-  const roomIdIndex = titleText.indexOf("Room : ");
+  const roomIdIndex = titleText.indexOf("");
 
   if (roomIdIndex !== -1) {
-    const roomId = titleText.substring(roomIdIndex + "Room : ".length);
+    const roomId = titleText.substring(roomIdIndex + "".length);
     return roomId.trim(); // 추출한 ID의 앞뒤 공백을 제거하고 정리된 방 ID를 반환
   }
 
@@ -116,7 +116,7 @@ socket.on("roomList", (rooms) => {
     roomItem.addEventListener("click", () => {
       // 해당 방의 정보를 이용하여 joinRoom 이벤트 발생
       socket.emit("joinRoom", { roomId: room.roomId });
-      title.textContent = `Room : ${room.roomId}`;
+      title.textContent = `${room.roomId}`;
     });
   });
 });
