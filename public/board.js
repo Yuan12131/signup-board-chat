@@ -8,6 +8,11 @@ const readTitle = document.getElementById("readTitle");
 const overlay = document.getElementById("overlay");
 const itemRows = document.querySelectorAll(".item-row"); //각각의 글 제목 클릭 시 해당 글의 내용을 모달에 출력
 const boardForm = document.getElementById("boardForm");
+const home = document.querySelector("h1")
+
+home.addEventListener("click", function () {
+    window.location.href = "/";
+});
 
 // 페이징 상수
 const postsPerPage = 10; // 페이지당 글 수
@@ -78,9 +83,6 @@ boardForm.addEventListener("submit", async function (event) {
 async function loadPosts() {
   const startIdx = (currentPage - 1) * postsPerPage;
   const endIdx = startIdx + postsPerPage;
-
-  console.log("startIdx:", startIdx);
-  console.log("endIdx:", endIdx);
 
   // /get-posts 경로로 HTTP GET 요청을 보내고, 해당 요청에 대한 응답을 기다리기 위해 await 키워드를 사용
   const response = await fetch("/get-posts");
