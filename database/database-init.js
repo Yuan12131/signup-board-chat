@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS messages (
   isHost TINYINT(1) NOT NULL,
   message TEXT NOT NULL,
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  FOREIGN KEY (roomId) REFERENCES rooms(roomId)
+  FOREIGN KEY (roomId) REFERENCES rooms(roomId),
+  INDEX (roomId)
 );
 `;
 
