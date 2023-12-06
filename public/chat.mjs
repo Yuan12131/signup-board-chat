@@ -1,4 +1,6 @@
-const socket = io("http://localhost:8000", { path: "/socket.io" });
+const socket = io("http://43.201.86.212:8000", {
+  transports: ["websocket"],
+});
 const chatBtn = document.getElementById("chatBtn");
 const chatRoom = document.getElementById("roomList");
 const title = document.getElementById("title");
