@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS rooms (
   userId VARCHAR(255) NOT NULL,
   isHost TINYINT(1) NOT NULL,
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  INDEX idx_rooms_roomId (roomId),
   FOREIGN KEY (userId) REFERENCES users(signupId)
 );
 `;
@@ -43,9 +44,9 @@ CREATE TABLE IF NOT EXISTS messages (
   isHost TINYINT(1) NOT NULL,
   message TEXT NOT NULL,
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  FOREIGN KEY (roomId) REFERENCES rooms(roomId),
-  INDEX (roomId)
-);
+  INDEX idx_messages_roomId (roomId),
+  FOREIGN KEY (roomId) REFERENCES rooms(roomId)
+)
 `;
 
 // 데이터베이스 초기화 함수
