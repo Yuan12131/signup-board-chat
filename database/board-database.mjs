@@ -11,6 +11,22 @@ async function insertBoardRecord(record) {
   try {
     const { userId, title, content, timestamp, imagePath } = record;
 
+    // 중복 체크 쿼리
+    const duplicateCheckQuery = `
+        SELECT * FROM ${tableName} WHERE title = ? AND userId = ? AND timestamp = ?;
+      `;
+
+    const duplicateCheckValues = [title, userId, timestamp];
+    const [existingRecords] = await pool.query(
+      duplicateCheckQuery,
+      duplicateCheckValues
+    );
+
+    if (existingRecords.length > 0) {
+      // 이미 존재하는 레코드가 있으면 중복 처리
+      return { status: "skipped", message: "레코드가 이미 존재합니다" };
+    }
+
     const insertQuery = `
       INSERT INTO ${tableName} (userId, title, content, timestamp, imagePath)
       VALUES (?, ?, ?, ?, ?);
