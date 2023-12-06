@@ -14,7 +14,9 @@ const server = createServer(app);
 
 // Socket.io의 Server 클래스를 사용하여 웹소켓 서버를 생성
 // io 객체는 웹소켓 연결을 관리하고, 클라이언트와 서버 간의 양방향 통신을 담당
-const io = new Server(server, { path: "/socket.io" });
+const io = new Server(server, {
+  path: "/socket.io",
+});
 
 const PORT = 8000;
 
@@ -27,8 +29,12 @@ const sessionMiddleware = session({
   store: new session.MemoryStore(),
 });
 
+app.use(cors({
+  origin: "http://43.201.86.212:8000",
+  methods: ["GET", "POST"],
+}));
+
 app.use(sessionMiddleware);
-app.use(cors());
 
 // 정적 파일 미들웨어 등록
 app.use(express.static("public"));
