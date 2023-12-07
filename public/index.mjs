@@ -13,6 +13,31 @@ const boardLink = document.querySelector(".board");
 const chatLink = document.querySelector(".chat");
 const idCheckBtn = document.getElementById("idCheckBtn");
 
+// 페이지 로딩 시 실행
+window.addEventListener("load", async function () {
+    // 세션 확인 요청을 서버로 보냄
+    const sessionResponse = await fetch("/check-session");
+
+    if (sessionResponse.ok) {
+      // 세션이 유효하면 로그인 상태로 간주
+      const status = await sessionResponse.text();
+
+      if (status === "세션 유효") {
+        // 세션이 유효하면 로그인 상태로 간주
+          loggedInUserId.style.display = "block";
+          loginForm.style.display = "none";
+          logoutBtn.style.display = "block";
+          signupBtn.style.display = "none";
+        } else {
+      // 세션이 없으면 로그인 폼 표시
+      console.log("User is not logged in");
+      loginForm.style.display = "block";
+      logoutBtn.style.display = "none";
+      signupBtn.style.display = "block";
+    }
+}
+});
+
 // 로그인 함수
 loginBtn.addEventListener("click", async function () {
   const userId = document.getElementById("userId").value;
