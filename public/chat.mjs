@@ -1,7 +1,7 @@
 const socket = io("http://43.201.86.212:8000", {
   transports: ["websocket"],
 });
-const chatBtn = document.getElementById("chatBtn");
+const chatForm = document.getElementById("chatForm");
 const chatRoom = document.getElementById("roomList");
 const title = document.getElementById("title");
 const chatInput = document.getElementById("chatInput");
@@ -78,23 +78,6 @@ function sendMessage(message) {
   }
 }
 
-chatInput.addEventListener("keydown", function (e) {
-  // event.key가 'Enter'인 경우
-  if (e.key === "Enter") {
-    e.preventDefault();
-    const message = chatInput.value;
-    sendMessage(message);
-    chatInput.value = "";
-  }
-});
-
-chatBtn.addEventListener("click", function (e) {
-  e.preventDefault();
-  const message = chatInput.value;
-  sendMessage(message);
-  chatInput.value = "";
-});
-
 // 소켓에 연결되면 userId 이벤트를 발생시켜 사용자 ID를 요청
 socket.on("connect", () => {
   socket.emit("userIdRequest");
@@ -144,6 +127,14 @@ socket.on("loadMessages", (messages) => {
       displayMessage(message, "right"); // 호스트가 아닌 경우 오른쪽에 출력
     }
   });
+});
+
+chatForm.addEventListener("submit", function (e) {
+  e.preventDefault();  // 기본 제출 동작 방지
+
+  const message = chatInput.value;
+  sendMessage(message);
+  chatInput.value = "";
 });
 
 // 서버에서 메시지를 전달받아 화면에 출력
