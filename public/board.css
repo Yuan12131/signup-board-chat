@@ -32,8 +32,8 @@ button{
   margin: 10px;
   background-color: #865DFF;
   border: 0;
-  background-color: E384FF;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 #postTable {
@@ -103,7 +103,7 @@ button{
 #closeWriteModal{
   position: relative;
   left: 1vw;
-  top: 0.5vh;
+  top: 1.5vh;
 }
 
 #title{
@@ -139,7 +139,7 @@ button{
 
 #readModal {
   width: 50vw;
-  height: 80vh;
+  height: 84vh;
   display: none;
   position: fixed;
   top: 50%;
@@ -179,6 +179,8 @@ button{
   background-color:rgb(175, 131, 215);
   position: relative;
   left: 17vw;
+  width: 80px;
+  height: 30px;
 }
 
 #readContent img {

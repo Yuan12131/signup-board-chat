@@ -103,7 +103,9 @@ h2 {
   cursor: pointer;
   list-style: none;
   background-color: #865DFF;
-  margin-top: 60px;
+  margin-top: 30px;
+  border-radius: 10px;
+  font-size: 13px;
 }
 
 
@@ -143,19 +145,19 @@ h2 {
 }
 
 #title {
-  width: 20vw;
+  width: 40vw;
   height: 10vh;
   line-height: 10vh;
   text-align: center;
   font-size: 2rem;
   color: whitesmoke;
-  
+  margin-top: 3vh;  
 }
+
 #chatInput {
-  width: 40vw;
-  height: 4vh;
+  width: 50vw;
+  height: 10vh;
   font-size: 1rem;
-  margin-top: 3vh;
 }
 
 #chatBtn {
@@ -170,11 +172,17 @@ h2 {
 
 #chat {
   position: relative;
-  width: 70vw;
-  height: 80vh;
+  width: 65vw;
+  height: 70vh;
   overflow: auto;
   display: flex;
   flex-direction: column;
+  border: 1px solid white;
+  margin-bottom: 3vh;
+  border-radius: 10px;
+  box-sizing: border-box;
+  padding: 20px;
+  font-size: 13px;
 }
 
 .message-container.left {
@@ -216,10 +224,10 @@ h2 {
 }
 
 .messageText {
-  max-width: 170px;
+  max-width: 150px;
   background-color: #865DFF;
   color: aliceblue;
-  border-radius: 5%;
+  border-radius: 10px;
   padding: 15px;
   word-wrap: break-word;
 }
@@ -227,16 +235,16 @@ h2 {
 .timestamp.left {
   color: lightgray;
   font-size: small;
-  margin-left: 10px;
   position: relative;
   top: 0;
   left: 150px;
+  font-size: 11px;
 }
 
 .timestamp.right {
   color: lightgray;
-  font-size: small;
+  font-size: 11px;
   position: relative;
   top: 0;
-  right: 160px;
+  right: 150px;
 }

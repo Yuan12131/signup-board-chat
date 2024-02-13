@@ -1,4 +1,4 @@
-const socket = io("http://43.201.86.212:8000", {
+const socket = io("http://localhost:8000", {
   transports: ["websocket"],
 });
 const chatForm = document.getElementById("chatForm");
@@ -90,13 +90,10 @@ socket.on("userId", (user) => {
 
 socket.on("roomList", (rooms) => {
   // 받은 방 목록을 활용하여 UI에 표시
-  chatRoom.innerHTML = ""; // 기존 목록 초기화
-
   rooms.forEach((room) => {
     const roomItem = document.createElement("li");
     roomItem.textContent = `${room.roomId} (Host: ${room.hostId})`;
     chatRoom.appendChild(roomItem);
-
     // 클릭 이벤트 핸들러 추가
     roomItem.addEventListener("click", () => {
       // 해당 방의 정보를 이용하여 joinRoom 이벤트 발생
