@@ -1,11 +1,11 @@
 import mysql2 from "mysql2/promise"
+require('dotenv').config();
 
 const dbConfig = {
-  host: "localhost",
-  user: "root",
-  password: "1234", // 실제 비밀번호로 대체
-  database: "community",
-  port: 3306, // MariaDB의 포트 번호 (기본값은 3306)
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 };
 
 // 데이터베이스 연결을 관리하기 위한 데이터베이스 풀을 생성하는 메서드
