@@ -30,7 +30,7 @@ const sessionMiddleware = session({
 });
 
 app.use(cors({
-  origin: "http://43.201.86.212:8000",
+  origin: "http://15.165.148.2/:8000",
   methods: ["GET", "POST"],
 }));
 
@@ -67,6 +67,6 @@ server.listen(PORT, (err) => {
   if (err) {
     console.error("Server err : ", err);
   } else {
-    console.log(`Server running : http://localhost:${PORT}`);
+    console.log(`Server running : http://15.165.148.2/:${PORT}`);
   }
 });
