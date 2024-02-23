@@ -1,4 +1,4 @@
-const socket = io("http://15.165.148.2/:8000", {
+const socket = io("http://15.165.148.2:8000", {
   transports: ["websocket"],
 });
 const chatForm = document.getElementById("chatForm");
